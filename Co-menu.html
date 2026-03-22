@@ -144,6 +144,53 @@
         .tcard.tube .t-name { color:var(--accent); }
         .tcard p { font-size:0.85rem; color:var(--muted); font-weight:300; line-height:1.7; }
 
+        /* UNAVAILABLE CARD */
+        .tcard.unavailable {
+            opacity: 0.55;
+            pointer-events: none;
+            position: relative;
+            filter: grayscale(0.6);
+        }
+        .tcard.unavailable::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                -45deg,
+                rgba(255,0,0,0.03) 0px,
+                rgba(255,0,0,0.03) 2px,
+                transparent 2px,
+                transparent 10px
+            );
+            pointer-events: none;
+        }
+        .unavailable-banner {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(255,60,60,0.1);
+            border: 1px solid rgba(255,60,60,0.35);
+            border-radius: 3px;
+            padding: 5px 13px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            color: #ff4444;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            animation: unavailablePulse 2.5s ease-in-out infinite;
+        }
+        .unavailable-banner::before {
+            content: '✕';
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        @keyframes unavailablePulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(255,60,60,0.2); }
+            50%       { opacity: 0.65; box-shadow: 0 0 14px rgba(255,60,60,0.4); }
+        }
+        .tcard.unavailable .t-name { text-decoration: line-through; text-decoration-color: rgba(255,60,60,0.6); text-decoration-thickness: 2px; }
+
         /* STEPS */
         .steps { display:flex; flex-direction:column; gap:20px; }
         .step { background:var(--card); border:1px solid var(--border); border-radius:4px; padding:30px 36px; display:flex; align-items:center; gap:40px; transition:all 0.35s; position:relative; overflow:hidden; }
@@ -285,7 +332,8 @@
             <div class="h2ln"><div class="h2bar"></div><div class="h2dot"></div><div class="h2bar"></div></div>
         </div>
         <div class="tgrid">
-            <div class="tcard flix">
+            <div class="tcard flix unavailable">
+                <div class="unavailable-banner">Indisponible</div>
                 <span class="t-icon">🔥</span>
                 <div class="t-name">CO-FLIX</div>
                 <p>Téléchargement de films et séries via yt-dlp — module Tor intégré pour l'anonymat — toutes les qualités disponibles.</p>
@@ -434,24 +482,14 @@
 <script>
 console.log('%c\n ██████╗ ██████╗       ███╗   ███╗███████╗███╗   ██╗██╗   ██╗\n ██╔════╝██╔═══██╗    ████╗ ████║██╔════╝████╗  ██║██║   ██║\n ██║     ██║   ██║    ██╔████╔██║█████╗  ██╔██╗ ██║██║   ██║\n ██║     ██║   ██║    ██║╚██╔╝██║██╔══╝  ██║╚██╗██║██║   ██║\n ╚██████╗╚██████╔╝    ██║ ╚═╝ ██║███████╗██║ ╚████║╚██████╔╝\n  ╚═════╝ ╚═════╝     ╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝ ╚═════╝\n\n « les droits humains compteront toujours\n   plus que les droits d\'auteur. »\n                     — Bicode-dev, 2026\n','color:#00cfff;font-family:monospace;font-size:10px;');
 
-// ══ ALGORITHME COULEUR HSL PRÉCIS ═════════════════════════
-// La teinte est calculée à partir de l'heure exacte du visiteur
-// en parcourant la roue chromatique (360°) sur 24h
-// → chaque visiteur voit une couleur unique et cohérente
 function buildPalette() {
     const now = new Date();
     const mins = now.getHours() * 60 + now.getMinutes();
-    const frac = mins / 1440; // 0→1 sur 24h
-
-    // Teinte principale : 360° / 24h = 15°/h
+    const frac = mins / 1440;
     const hue = frac * 360;
-    // Teinte secondaire : décalage harmonique de 150° (split-complementary)
     const hue2 = (hue + 150) % 360;
-    // Saturation : varie légèrement (85-100%) selon sinusoïde
     const sat = 85 + 15 * Math.sin(frac * Math.PI * 2);
-    // Luminosité : 58-64% pour rester lisible sur fond #04040a
     const lit = 58 + 6 * Math.cos(frac * Math.PI * 4);
-
     function hsl2hex(h, s, l) {
         h /= 360; s /= 100; l /= 100;
         const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
@@ -471,7 +509,6 @@ function buildPalette() {
         const hex = hsl2hex(h,s,l);
         return [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)).join(',');
     }
-
     return {
         ac:  hsl2hex(hue,  sat, lit),
         ar:  hsl2rgb(hue,  sat, lit),
@@ -488,22 +525,12 @@ function applyPalette(p,src){const r=document.documentElement;r.style.setPropert
 function getSystemColor(){try{const d=document.createElement('div');d.style.color='AccentColor';document.body.appendChild(d);const c=getComputedStyle(d).color;document.body.removeChild(d);const m=c.match(/\d+/g);if(m&&m.length>=3){const r=+m[0],g=+m[1],b=+m[2];if(r+g+b>30&&r+g+b<720)return{ac:`#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`,ar:`${r},${g},${b}`,a2:'#7c3fff',a2r:'124,63,255',name:'Sys'};}}catch(e){}return null;}
 function nextColor(){pidx=(pidx+1)%PALETTES.length;applyPalette(PALETTES[pidx]);document.body.style.filter='brightness(1.12)';setTimeout(()=>{document.body.style.filter='';},320);}
 (function(){
-    // Essai couleur système d'abord
     const sys = getSystemColor();
-    if (sys) {
-        applyPalette(sys, 'SYS');
-    } else {
-        // Sinon : algorithme HSL précis basé sur l'heure
-        const p = buildPalette();
-        applyPalette(p, 'HSL');
-    }
-    // Recalcul toutes les minutes (la couleur évolue dans le temps)
+    if (sys) { applyPalette(sys, 'SYS'); }
+    else { const p = buildPalette(); applyPalette(p, 'HSL'); }
     setInterval(() => {
         const sys2 = getSystemColor();
-        if (!sys2) {
-            const p2 = buildPalette();
-            applyPalette(p2, 'HSL');
-        }
+        if (!sys2) { const p2 = buildPalette(); applyPalette(p2, 'HSL'); }
     }, 60000);
 })();
 (function(){const c=document.getElementById('particles');for(let i=0;i<70;i++){const p=document.createElement('div');p.className='particle';const sz=Math.random()*2.5+0.4,a2=Math.random()>.68;p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;bottom:${-Math.random()*10}%;background:${a2?'var(--accent2)':'var(--accent)'};box-shadow:0 0 ${sz*3}px ${a2?'var(--accent2)':'var(--accent)'};animation-duration:${Math.random()*20+12}s;animation-delay:${Math.random()*15}s;`;c.appendChild(p);}})();
