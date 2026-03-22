@@ -257,6 +257,7 @@
         .cm::before  { background:linear-gradient(90deg,var(--accent),var(--accent2)); box-shadow:0 0 20px var(--accent); }
         .cc::before  { background:linear-gradient(90deg,#ff6eb4,#ff33aa); box-shadow:0 0 20px #ff6eb4; }
         .ct::before  { background:linear-gradient(90deg,#ff5c38,#ff9500); box-shadow:0 0 20px #ff5c38; }
+        .cf::before  { background:linear-gradient(90deg,#a855f7,#6366f1); box-shadow:0 0 20px #a855f7; }
         /* shimmer */
         .pcard::after { content:''; position:absolute; inset:0; opacity:0; transition:opacity 0.4s; background:linear-gradient(110deg,transparent 40%,rgba(255,255,255,0.022) 50%,transparent 60%); pointer-events:none; }
         .pcard:hover::after { opacity:1; }
@@ -270,11 +271,13 @@
         .cm:hover .cc-tl,.cm:hover .cc-tr,.cm:hover .cc-bl,.cm:hover .cc-br { border-color:var(--accent); }
         .cc:hover .cc-tl,.cc:hover .cc-tr,.cc:hover .cc-bl,.cc:hover .cc-br { border-color:#ff6eb4; }
         .ct:hover .cc-tl,.ct:hover .cc-tr,.ct:hover .cc-bl,.ct:hover .cc-br { border-color:#ff5c38; }
+        .cf:hover .cc-tl,.cf:hover .cc-tr,.cf:hover .cc-bl,.cf:hover .cc-br { border-color:#a855f7; }
         /* hover states */
         .pcard:hover { transform:translateY(-10px); border-color:var(--border-hi); }
         .cm:hover { box-shadow:0 24px 70px rgba(0,207,255,0.13); }
         .cc:hover { box-shadow:0 24px 70px rgba(255,110,180,0.13); border-color:rgba(255,110,180,0.25); }
         .ct:hover { box-shadow:0 24px 70px rgba(255,92,56,0.13); border-color:rgba(255,92,56,0.25); }
+        .cf:hover { box-shadow:0 24px 70px rgba(168,85,247,0.13); border-color:rgba(168,85,247,0.25); }
         /* card content */
         .c-icon { font-size:3.2rem; margin-bottom:22px; display:block; animation:iconFloat 4s ease-in-out infinite; }
         .pcard:nth-child(2) .c-icon { animation-delay:1.3s; }
@@ -284,6 +287,7 @@
         .cm .c-title { color:var(--accent); text-shadow:0 0 20px rgba(var(--accent-rgb),0.4); }
         .cc .c-title { color:#ff6eb4; text-shadow:0 0 20px rgba(255,110,180,0.4); }
         .ct .c-title { color:#ff5c38; text-shadow:0 0 20px rgba(255,92,56,0.4); }
+        .cf .c-title { color:#a855f7; text-shadow:0 0 20px rgba(168,85,247,0.4); }
         .c-tag { font-family:'Share Tech Mono',monospace; font-size:0.68rem; letter-spacing:3px; text-transform:uppercase; color:var(--muted); margin-bottom:22px; }
         .c-desc { font-size:0.93rem; color:var(--light); margin-bottom:26px; line-height:1.8; font-weight:300; }
         .c-tags { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:34px; }
@@ -291,6 +295,7 @@
         .cm .ctag { border-color:rgba(0,207,255,0.2); color:var(--accent); background:rgba(0,207,255,0.04); }
         .cc .ctag { border-color:rgba(255,110,180,0.2); color:#ff6eb4; background:rgba(255,110,180,0.04); }
         .ct .ctag { border-color:rgba(255,92,56,0.2); color:#ff5c38; background:rgba(255,92,56,0.04); }
+        .cf .ctag { border-color:rgba(168,85,247,0.2); color:#a855f7; background:rgba(168,85,247,0.04); }
         .ctag:hover { background:rgba(255,255,255,0.06); }
         .c-btn {
             display:inline-flex; align-items:center; gap:8px; padding:12px 34px; border-radius:2px;
@@ -310,6 +315,14 @@
         .ct .c-btn { color:#ff5c38; border-color:#ff5c38; }
         .ct .c-btn::before { background:#ff5c38; }
         .ct .c-btn:hover { color:var(--bg); box-shadow:0 0 24px rgba(255,92,56,0.4); }
+        .cf .c-btn { color:#a855f7; border-color:#a855f7; }
+        .cf .c-btn::before { background:#a855f7; }
+        .cf .c-btn:hover { color:var(--bg); box-shadow:0 0 24px rgba(168,85,247,0.4); }
+        .c-btn-unavail {
+            display:inline-flex; align-items:center; gap:8px; padding:12px 34px; border-radius:2px;
+            font-family:'Rajdhani',sans-serif; font-size:0.86rem; font-weight:700; letter-spacing:3px; text-transform:uppercase;
+            border:1px solid var(--border); color:var(--muted); background:transparent; cursor:not-allowed; opacity:0.55;
+        }
 
         /* FEATURES */
         .fgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); gap:20px; }
@@ -432,7 +445,7 @@
 
 <!-- STATS -->
 <div class="stats-bar">
-    <div class="stat"><div class="stat-num">3</div><div class="stat-label">Projets actifs</div><div class="stat-underline"></div></div>
+    <div class="stat"><div class="stat-num">4</div><div class="stat-label">Projets actifs</div><div class="stat-underline"></div></div>
     <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Gratuit &amp; Open Source</div><div class="stat-underline" style="animation-delay:.5s"></div></div>
     <div class="stat"><div class="stat-num">0</div><div class="stat-label">Publicités</div><div class="stat-underline" style="animation-delay:1s"></div></div>
     <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Téléchargements</div><div class="stat-underline" style="animation-delay:1.5s"></div></div>
@@ -475,6 +488,15 @@
                 <p class="c-desc">Téléchargez n'importe quelle vidéo YouTube en MP4 haute qualité ou en MP3. Sous-titres intégrés, cookies natifs Chrome/Firefox.</p>
                 <div class="c-tags"><span class="ctag">MP4 4K</span><span class="ctag">MP3</span><span class="ctag">Sous-titres</span><span class="ctag">yt-dlp</span></div>
                 <a href="Co-tube.html" class="c-btn">Ouvrir <span class="c-btn-arr">→</span></a>
+            </div>
+            <div class="pcard cf">
+                <div class="cc-tl"></div><div class="cc-tr"></div><div class="cc-bl"></div><div class="cc-br"></div>
+                <span class="c-icon">🎥</span>
+                <div class="c-title">CO-FLIX</div>
+                <div class="c-tag">Téléchargeur Films &amp; Séries</div>
+                <p class="c-desc">Téléchargez films et séries en streaming en haute qualité.</p>
+                <div class="c-tags"><span class="ctag">Films</span><span class="ctag">Séries</span><span class="ctag">HD</span></div>
+                <span class="c-btn-unavail">🔒 Non disponible</span>
             </div>
         </div>
     </div>
