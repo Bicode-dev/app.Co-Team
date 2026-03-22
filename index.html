@@ -70,42 +70,86 @@
         .particle { position:absolute; border-radius:50%; opacity:0; animation:rise linear infinite; }
         @keyframes rise { 0%{opacity:0;transform:translateY(0) scale(1);} 10%{opacity:0.8;} 90%{opacity:0.2;} 100%{opacity:0;transform:translateY(-110vh) scale(0.2);} }
 
-        /* STATUS BAR */
-        #statusbar {
-            position:fixed; top:0; left:0; right:0; z-index:2000;
-            height:26px; background:rgba(4,4,10,0.98);
-            border-bottom:1px solid var(--border);
-            display:flex; align-items:center; padding:0 20px; gap:20px;
-            font-family:'Share Tech Mono',monospace; font-size:0.62rem; letter-spacing:1.5px; color:var(--muted);
-        }
-        .sb { display:flex; align-items:center; gap:5px; }
-        .sbd { width:5px; height:5px; border-radius:50%; }
-        .sbd.g { background:var(--green); box-shadow:0 0 5px var(--green); animation:blink 2.4s ease infinite; }
-        .sbd.w { background:var(--warn); box-shadow:0 0 5px var(--warn); animation:blink 2.4s ease infinite 0.8s; }
-        .sbd.a { background:var(--accent); box-shadow:0 0 5px var(--accent); animation:blink 2.4s ease infinite 1.6s; }
         @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
-        #sb-clock { margin-left:auto; color:var(--accent); font-size:0.65rem; }
 
-        /* NAV */
+        /* NAV — single unified bar */
         nav {
-            position:fixed; top:26px; left:0; right:0; z-index:1000;
-            background:rgba(4,4,10,0.88); backdrop-filter:blur(28px) saturate(200%);
-            border-bottom:1px solid var(--border); animation:navIn 0.8s ease-out;
+            position:fixed; top:0; left:0; right:0; z-index:1000;
+            background:rgba(4,4,10,0.88);
+            backdrop-filter:blur(28px) saturate(200%);
+            border-bottom:1px solid var(--border);
+            animation:navIn 0.8s ease-out;
         }
         @keyframes navIn { from{transform:translateY(-100%);opacity:0;} to{transform:translateY(0);opacity:1;} }
-        .nav-in { max-width:1360px; margin:0 auto; padding:0 40px; height:60px; display:flex; align-items:center; justify-content:space-between; }
-        .nav-logo { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.2rem; letter-spacing:8px; color:var(--accent); text-transform:uppercase; display:flex; align-items:center; gap:12px; }
-        .nav-pulse { width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 12px var(--accent),0 0 24px rgba(var(--accent-rgb),0.4); animation:logoPulse 2.2s infinite; }
-        @keyframes logoPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(0.6); box-shadow:0 0 4px var(--accent);} }
-        .nav-links { display:flex; gap:4px; }
-        .nav-links a { font-family:'Rajdhani',sans-serif; font-weight:600; font-size:0.8rem; letter-spacing:2.5px; text-transform:uppercase; padding:6px 14px; color:var(--muted); border:1px solid transparent; border-radius:3px; transition:all 0.25s; }
-        .nav-links a:hover { color:var(--accent); border-color:var(--border-hi); background:var(--accent-glow); text-shadow:0 0 10px rgba(var(--accent-rgb),0.5); }
-        .nav-badge { font-family:'Share Tech Mono',monospace; font-size:0.62rem; color:var(--muted); padding:4px 10px; border:1px solid var(--border); border-radius:3px; letter-spacing:1px; }
+
+        /* thin accent line at very top of nav */
+        nav::before {
+            content:'';
+            position:absolute; top:0; left:0; right:0; height:1px;
+            background:linear-gradient(90deg, transparent 0%, var(--accent) 30%, var(--accent2) 70%, transparent 100%);
+            opacity:0.5;
+        }
+
+        .nav-in {
+            max-width:1360px; margin:0 auto; padding:0 40px;
+            height:64px; display:flex; align-items:center; gap:0;
+        }
+
+        /* Logo */
+        .nav-logo {
+            font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.15rem;
+            letter-spacing:7px; color:var(--accent); text-transform:uppercase;
+            display:flex; align-items:center; gap:12px; margin-right:40px; flex-shrink:0;
+        }
+        .nav-pulse {
+            width:7px; height:7px; border-radius:50%;
+            background:var(--accent);
+            box-shadow:0 0 10px var(--accent), 0 0 22px rgba(var(--accent-rgb),0.35);
+            animation:logoPulse 2.2s infinite;
+        }
+        @keyframes logoPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(0.55); box-shadow:0 0 3px var(--accent);} }
+
+        /* Links — centred */
+        .nav-links { display:flex; gap:2px; flex:1; justify-content:center; }
+        .nav-links a {
+            font-family:'Rajdhani',sans-serif; font-weight:600; font-size:0.78rem;
+            letter-spacing:2.5px; text-transform:uppercase;
+            padding:7px 16px; color:var(--muted);
+            border:1px solid transparent; border-radius:3px; transition:all 0.22s;
+            position:relative;
+        }
+        .nav-links a::after {
+            content:''; position:absolute; bottom:4px; left:50%; right:50%;
+            height:1px; background:var(--accent);
+            transition:left 0.25s, right 0.25s;
+            box-shadow:0 0 6px var(--accent);
+        }
+        .nav-links a:hover { color:var(--accent); background:rgba(var(--accent-rgb),0.06); }
+        .nav-links a:hover::after { left:16px; right:16px; }
+
+        /* Right meta cluster */
+        .nav-meta {
+            display:flex; align-items:center; gap:16px; margin-left:40px; flex-shrink:0;
+        }
+        .nav-clock {
+            font-family:'Share Tech Mono',monospace; font-size:0.72rem;
+            color:var(--accent); letter-spacing:2px; opacity:0.8;
+        }
+        .nav-dot {
+            width:6px; height:6px; border-radius:50%;
+            background:var(--green); box-shadow:0 0 7px var(--green);
+            animation:blink 2.4s ease infinite;
+        }
+        .nav-badge {
+            font-family:'Share Tech Mono',monospace; font-size:0.6rem;
+            color:var(--muted); padding:3px 9px;
+            border:1px solid var(--border); border-radius:3px; letter-spacing:1px;
+        }
 
         /* HERO */
         #hero {
             min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;
-            text-align:center; padding:140px 20px 100px; position:relative; overflow:hidden;
+            text-align:center; padding:100px 20px 100px; position:relative; overflow:hidden;
         }
         /* diagonal lines */
         #hero::before {
@@ -354,20 +398,7 @@
 <div id="ambient"></div>
 <div id="particles"></div>
 
-<!-- STATUS BAR -->
-<div id="statusbar">
-    <div class="sb"><div class="sbd g"></div><span>ONLINE</span></div>
-    <div class="sb"><div class="sbd w"></div><span>3 MODULES</span></div>
-    <div class="sb"><div class="sbd a"></div><span id="sb-clrlbl">ACCENT AUTO</span></div>
-    <div class="sb" style="margin-left:auto;gap:14px;">
-        <span>CO SUITE</span><span style="opacity:0.3;">·</span>
-        <span>BICODE-DEV</span><span style="opacity:0.3;">·</span>
-        <span>OPEN SOURCE</span>
-    </div>
-    <div id="sb-clock"></div>
-</div>
-
-<!-- NAV -->
+<!-- NAV — unified single bar -->
 <nav id="nav">
     <div class="nav-in">
         <div class="nav-logo"><div class="nav-pulse"></div>CO HUB</div>
@@ -378,7 +409,11 @@
             <a href="#terminal">Terminal</a>
             <a href="#contact">Discord</a>
         </div>
-        <div class="nav-badge">v2.0.0</div>
+        <div class="nav-meta">
+            <div class="nav-dot"></div>
+            <div class="nav-clock" id="nav-clock"></div>
+            <div class="nav-badge" id="nav-badge">v2.0</div>
+        </div>
     </div>
 </nav>
 
@@ -456,7 +491,7 @@
             <div class="h2ln"><div class="h2bar"></div><div class="h2dot"></div><div class="h2bar"></div></div>
         </div>
         <div class="fgrid">
-            <div class="fcard"><span class="f-icon">🆓</span><h3>Gratuit à vie</h3><p>Zéro pub, zéro paywall, zéro abonnement. Pour toujours, sans exception.</p></div>
+            <div class="fcard"><span class="f-icon">🆓</span><h3>Gratuit</h3><p>Zéro pub, zéro paywall, zéro abonnement. <span style="color:var(--muted);font-size:0.82em;">Pour l'instant — susceptible de changer.</span></p></div>
             <div class="fcard"><span class="f-icon">🔓</span><h3>Open Source</h3><p>Code visible et vérifiable sur GitHub par n'importe qui, à tout moment.</p></div>
             <div class="fcard"><span class="f-icon">📦</span><h3>Portable</h3><p>Aucune installation requise. Double-clic et c'est parti.</p></div>
             <div class="fcard"><span class="f-icon">📱</span><h3>Multi-plateforme</h3><p>Windows, macOS, Linux et Android (Termux) supportés nativement.</p></div>
@@ -508,7 +543,7 @@
         <h2 style="margin-top:8px;">Une question ?</h2>
         <div class="h2ln" style="max-width:380px;margin:18px auto 0;"><div class="h2bar"></div><div class="h2dot"></div><div class="h2bar"></div></div>
         <p style="color:var(--light);margin-top:22px;font-size:1rem;font-weight:300;">Support instantané &nbsp;·&nbsp; Mises à jour &nbsp;·&nbsp; Communauté active</p>
-        <a href="https://discord.gg/JH5T8PwFRN" target="_blank" class="disc-btn"><span>Rejoindre le Discord</span><span>↗</span></a>
+        <a href="https://discord.gg/cG6qSTSeUA" target="_blank" class="disc-btn"><span>Rejoindre le Discord</span><span>↗</span></a>
         <div class="ct-links">
             <a href="https://github.com/Bicode-dev" target="_blank" class="ct-lnk">github.com/Bicode-dev</a>
             <a href="Co-menu.html" class="ct-lnk">Co-Menu</a>
@@ -596,7 +631,7 @@ function applyPalette(p, src){
         `linear-gradient(rgba(${p.ar},0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(${p.ar},0.022) 1px,transparent 1px)`;
     document.getElementById('cswatch').style.cssText=`background:${p.ac};box-shadow:0 0 6px ${p.ac};`;
     document.getElementById('clrlbl').textContent=(src||'')+p.name.toUpperCase();
-    document.getElementById('sb-clrlbl').textContent='ACCENT: '+p.name.toUpperCase()+(src?' ('+src+')':'');
+    const badge=document.getElementById('nav-badge');if(badge)badge.textContent=(src==='SYS'?'SYS:':src==='RNG'?'RNG:':'v2')+(src&&src!=='manual'?' '+p.name:'');
 }
 
 function getSystemColor(){
@@ -645,7 +680,7 @@ function nextColor(){
 })();
 
 // ══ CLOCK ════════════════════════════════════════════════════
-function tick(){const n=new Date(),h=n.getHours().toString().padStart(2,'0'),m=n.getMinutes().toString().padStart(2,'0'),s=n.getSeconds().toString().padStart(2,'0');document.getElementById('sb-clock').textContent=`${h}:${m}:${s}`;}
+function tick(){const n=new Date(),h=n.getHours().toString().padStart(2,'0'),m=n.getMinutes().toString().padStart(2,'0'),s=n.getSeconds().toString().padStart(2,'0');const el=document.getElementById('nav-clock');if(el)el.textContent=`${h}:${m}:${s}`;}
 setInterval(tick,1000); tick();
 
 // ══ EASTER EGG ══════════════════════════════════════════════
