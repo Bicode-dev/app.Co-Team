@@ -20,9 +20,9 @@
     <style>
         *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
         :root {
-            --bg:#04040a; --surface:#070710; --card:#0a0a16;
-            --border:#181828; --border-hi:#262640;
-            --text:#d0d0e8; --muted:#444460; --light:#8888aa;
+            --bg:#04040a; --surface:#070710; --card:#0d0d1e;
+            --border:#222238; --border-hi:#343460;
+            --text:#eeeef8; --muted:#7070a0; --light:#b8b8d8;
             --accent:#ff6eb4; --accent-rgb:255,110,180; --accent-glow:rgba(255,110,180,0.13);
             --accent2:#bf5fff; --accent2-rgb:191,95,255;
             --green:#00ff88; --warn:#ffb700;
@@ -139,7 +139,7 @@
         .fcard:hover { border-color:var(--border-hi); transform:translateX(6px); background:#0e0b14; box-shadow:4px 0 20px rgba(var(--accent-rgb),0.07); }
         .f-icon { font-size:2rem; display:block; margin-bottom:14px; }
         .fcard h3 { font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin-bottom:10px; }
-        .fcard p { font-size:0.87rem; color:var(--muted); font-weight:300; line-height:1.7; }
+        .fcard p { font-size:0.9rem; color:var(--light); font-weight:300; line-height:1.7; }
 
         /* STEPS */
         .steps { display:flex; flex-direction:column; gap:20px; }
@@ -279,7 +279,7 @@
             <div class="fcard"><span class="f-icon">📦</span><h3>Portable</h3><p>Aucune installation requise. Fonctionne sur Windows & Android (Termux).</p></div>
             <div class="fcard"><span class="f-icon">🔁</span><h3>Reprise auto</h3><p>Si le téléchargement est interrompu, Co-Chan reprend automatiquement là où il s'est arrêté.</p></div>
             <div class="fcard"><span class="f-icon">🔓</span><h3>Open Source</h3><p>Code source 100% visible sur GitHub — vérifiable par n'importe qui à tout moment.</p></div>
-            <div class="fcard"><span class="f-icon">🆓</span><h3>Gratuit</h3><p>Zéro pub, zéro paywall, zéro abonnement. <span style="color:var(--muted);font-size:0.82em;">Pour l'instant — susceptible de changer.</span></p></div>
+            <div class="fcard"><span class="f-icon">🆓</span><h3>Gratuit <span style="font-size:0.65em;color:var(--warn);vertical-align:middle;border:1px solid var(--warn);padding:1px 6px;border-radius:2px;letter-spacing:1px;">?</span></h3><p style="color:var(--light);">Actuellement gratuit — <em style="color:var(--warn);font-style:normal;">susceptible de devenir payant.</em></p></div>
         </div>
     </div>
 </div>
@@ -463,6 +463,55 @@
 console.log('%c\n ██████╗ ██████╗       ██████╗██╗  ██╗ █████╗ ███╗   ██╗\n ██╔════╝██╔═══██╗    ██╔════╝██║  ██║██╔══██╗████╗  ██║\n ██║     ██║   ██║    ██║     ███████║███████║██╔██╗ ██║\n ██║     ██║   ██║    ██║     ██╔══██║██╔══██║██║╚██╗██║\n ╚██████╗╚██████╔╝    ╚██████╗██║  ██║██║  ██║██║ ╚████║\n  ╚═════╝ ╚═════╝      ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝\n\n « les droits humains compteront toujours\n   plus que les droits d\'auteur. »\n                     — Bicode-dev, 2026\n', 'color:#ff6eb4;font-family:monospace;font-size:10px;');
 
 // COLOR SYSTEM
+
+// ══ ALGORITHME COULEUR HSL PRÉCIS ═════════════════════════
+// La teinte est calculée à partir de l'heure exacte du visiteur
+// en parcourant la roue chromatique (360°) sur 24h
+// → chaque visiteur voit une couleur unique et cohérente
+function buildPalette() {
+    const now = new Date();
+    const mins = now.getHours() * 60 + now.getMinutes();
+    const frac = mins / 1440; // 0→1 sur 24h
+
+    // Teinte principale : 360° / 24h = 15°/h
+    const hue = frac * 360;
+    // Teinte secondaire : décalage harmonique de 150° (split-complementary)
+    const hue2 = (hue + 150) % 360;
+    // Saturation : varie légèrement (85-100%) selon sinusoïde
+    const sat = 85 + 15 * Math.sin(frac * Math.PI * 2);
+    // Luminosité : 58-64% pour rester lisible sur fond #04040a
+    const lit = 58 + 6 * Math.cos(frac * Math.PI * 4);
+
+    function hsl2hex(h, s, l) {
+        h /= 360; s /= 100; l /= 100;
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        const hue2rgb = (p, q, t) => {
+            if (t < 0) t += 1; if (t > 1) t -= 1;
+            if (t < 1/6) return p + (q - p) * 6 * t;
+            if (t < 0.5) return q;
+            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+            return p;
+        };
+        const [r,g,b] = [hue2rgb(p,q,h+1/3), hue2rgb(p,q,h), hue2rgb(p,q,h-1/3)]
+            .map(x => Math.round(x*255));
+        return '#' + [r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+    }
+    function hsl2rgb(h,s,l) {
+        const hex = hsl2hex(h,s,l);
+        return [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)).join(',');
+    }
+
+    return {
+        ac:  hsl2hex(hue,  sat, lit),
+        ar:  hsl2rgb(hue,  sat, lit),
+        a2:  hsl2hex(hue2, sat, lit),
+        a2r: hsl2rgb(hue2, sat, lit),
+        name: `${Math.round(hue)}°`,
+        hue: Math.round(hue)
+    };
+}
+
 const PALETTES=[
     {name:'Rose',    ac:'#ff6eb4',ar:'255,110,180',  a2:'#bf5fff',a2r:'191,95,255'},
     {name:'Cyan',    ac:'#00cfff',ar:'0,207,255',    a2:'#7c3fff',a2r:'124,63,255'},
@@ -484,13 +533,31 @@ function applyPalette(p,src){
     document.getElementById('grid-bg').style.backgroundImage=`linear-gradient(rgba(${p.ar},0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(${p.ar},0.02) 1px,transparent 1px)`;
     document.getElementById('cswatch').style.cssText=`background:${p.ac};box-shadow:0 0 6px ${p.ac};width:8px;height:8px;border-radius:50%;`;
     document.getElementById('clrlbl').textContent=(src||'')+p.name.toUpperCase();
-    const b=document.getElementById('nav-badge');if(b)b.textContent=src==='SYS'?'SYS':src==='RNG'?'RNG':'v2';
+    const b=document.getElementById('nav-badge');if(b)b.textContent=src==='SYS'?'SYS':src==='HSL'?`H${p.name||''}`:p.name||'v2';
 }
 function getSystemColor(){
     try{const d=document.createElement('div');d.style.color='AccentColor';document.body.appendChild(d);const c=getComputedStyle(d).color;document.body.removeChild(d);const m=c.match(/\d+/g);if(m&&m.length>=3){const r=+m[0],g=+m[1],b=+m[2];if(r+g+b>30&&r+g+b<720)return{ac:`#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`,ar:`${r},${g},${b}`,a2:'#bf5fff',a2r:'191,95,255',name:'Système'};}}catch(e){}return null;
 }
 function nextColor(){pidx=(pidx+1)%PALETTES.length;applyPalette(PALETTES[pidx]);document.body.style.filter='brightness(1.12)';setTimeout(()=>{document.body.style.filter='';},320);}
-(function(){const sys=getSystemColor();if(sys){applyPalette(sys,'SYS');}else{pidx=Math.floor(Math.random()*PALETTES.length);applyPalette(PALETTES[pidx],'RNG');}})();
+(function(){
+    // Essai couleur système d'abord
+    const sys = getSystemColor();
+    if (sys) {
+        applyPalette(sys, 'SYS');
+    } else {
+        // Sinon : algorithme HSL précis basé sur l'heure
+        const p = buildPalette();
+        applyPalette(p, 'HSL');
+    }
+    // Recalcul toutes les minutes (la couleur évolue dans le temps)
+    setInterval(() => {
+        const sys2 = getSystemColor();
+        if (!sys2) {
+            const p2 = buildPalette();
+            applyPalette(p2, 'HSL');
+        }
+    }, 60000);
+})();
 
 // PARTICLES
 (function(){const c=document.getElementById('particles');for(let i=0;i<70;i++){const p=document.createElement('div');p.className='particle';const sz=Math.random()*2.5+0.4,a2=Math.random()>.68;p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;bottom:${-Math.random()*10}%;background:${a2?'var(--accent2)':'var(--accent)'};box-shadow:0 0 ${sz*3}px ${a2?'var(--accent2)':'var(--accent)'};animation-duration:${Math.random()*20+12}s;animation-delay:${Math.random()*15}s;`;c.appendChild(p);}})();

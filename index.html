@@ -20,9 +20,9 @@
     <style>
         *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
         :root {
-            --bg:#04040a; --surface:#070710; --card:#0a0a16;
-            --border:#181828; --border-hi:#262640;
-            --text:#d0d0e8; --muted:#444460; --light:#8888aa;
+            --bg:#04040a; --surface:#070710; --card:#0d0d1e;
+            --border:#222238; --border-hi:#343460;
+            --text:#eeeef8; --muted:#7070a0; --light:#b8b8d8;
             --accent:#00cfff; --accent-rgb:0,207,255; --accent-glow:rgba(0,207,255,0.14);
             --accent2:#7c3fff; --accent2-rgb:124,63,255;
             --green:#00ff88; --warn:#ffb700;
@@ -319,7 +319,7 @@
         .fcard:hover { border-color:var(--border-hi); transform:translateX(6px); background:#0d0d1c; box-shadow:4px 0 20px rgba(var(--accent-rgb),0.08); }
         .f-icon { font-size:2rem; display:block; margin-bottom:14px; }
         .fcard h3 { font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin-bottom:10px; }
-        .fcard p { font-size:0.87rem; color:var(--muted); font-weight:300; line-height:1.7; }
+        .fcard p { font-size:0.9rem; color:var(--light); font-weight:300; line-height:1.7; }
 
         /* TERMINAL */
         .terminal { background:#020208; border:1px solid var(--border); border-radius:6px; overflow:hidden; max-width:760px; margin:56px auto 0; }
@@ -491,7 +491,7 @@
             <div class="h2ln"><div class="h2bar"></div><div class="h2dot"></div><div class="h2bar"></div></div>
         </div>
         <div class="fgrid">
-            <div class="fcard"><span class="f-icon">🆓</span><h3>Gratuit</h3><p>Zéro pub, zéro paywall, zéro abonnement. <span style="color:var(--muted);font-size:0.82em;">Pour l'instant — susceptible de changer.</span></p></div>
+            <div class="fcard"><span class="f-icon">🆓</span><h3>Gratuit <span style="font-size:0.65em;color:var(--warn);vertical-align:middle;border:1px solid var(--warn);padding:1px 6px;border-radius:2px;letter-spacing:1px;">?</span></h3><p style="color:var(--light);">Actuellement gratuit — <em style="color:var(--warn);font-style:normal;">susceptible de devenir payant.</em></p></div>
             <div class="fcard"><span class="f-icon">🔓</span><h3>Open Source</h3><p>Code visible et vérifiable sur GitHub par n'importe qui, à tout moment.</p></div>
             <div class="fcard"><span class="f-icon">📦</span><h3>Portable</h3><p>Aucune installation requise. Double-clic et c'est parti.</p></div>
             <div class="fcard"><span class="f-icon">📱</span><h3>Multi-plateforme</h3><p>Windows, macOS, Linux et Android (Termux) supportés nativement.</p></div>
@@ -606,64 +606,71 @@ console.log(
     'color:#00cfff;font-family:monospace;font-size:10px;'
 );
 
-// ══ COLOR SYSTEM ════════════════════════════════════════════
-const PALETTES = [
-    {name:'Cyan',    ac:'#00cfff',ar:'0,207,255',    a2:'#7c3fff',a2r:'124,63,255'},
-    {name:'Electric',ac:'#00f0b5',ar:'0,240,181',    a2:'#0095ff',a2r:'0,149,255'},
-    {name:'Plasma',  ac:'#bf5fff',ar:'191,95,255',   a2:'#ff3fa4',a2r:'255,63,164'},
-    {name:'Solar',   ac:'#ffb700',ar:'255,183,0',    a2:'#ff5c38',a2r:'255,92,56'},
-    {name:'Neon',    ac:'#39ff14',ar:'57,255,20',    a2:'#00cfff',a2r:'0,207,255'},
-    {name:'Rose',    ac:'#ff3fa4',ar:'255,63,164',   a2:'#bf5fff',a2r:'191,95,255'},
-    {name:'Ice',     ac:'#4fc3f7',ar:'79,195,247',   a2:'#00cfff',a2r:'0,207,255'},
-    {name:'Volt',    ac:'#d4ff00',ar:'212,255,0',    a2:'#00cfff',a2r:'0,207,255'},
-];
-let pidx = 0;
-
-function applyPalette(p, src){
-    const r = document.documentElement;
-    r.style.setProperty('--accent',     p.ac);
-    r.style.setProperty('--accent-rgb', p.ar);
-    r.style.setProperty('--accent-glow',`rgba(${p.ar},0.14)`);
-    r.style.setProperty('--accent2',    p.a2);
-    r.style.setProperty('--accent2-rgb',p.a2r);
-    // grid
-    document.getElementById('grid-bg').style.backgroundImage=
-        `linear-gradient(rgba(${p.ar},0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(${p.ar},0.022) 1px,transparent 1px)`;
-    document.getElementById('cswatch').style.cssText=`background:${p.ac};box-shadow:0 0 6px ${p.ac};`;
-    document.getElementById('clrlbl').textContent=(src||'')+p.name.toUpperCase();
-    const badge=document.getElementById('nav-badge');if(badge)badge.textContent=(src==='SYS'?'SYS:':src==='RNG'?'RNG:':'v2')+(src&&src!=='manual'?' '+p.name:'');
+// ══ ALGORITHME COULEUR HSL PRÉCIS ═══════════════════════════
+// La teinte est calculée à partir de l'heure du visiteur
+// 360° parcourus en 24h → chaque heure a sa couleur propre
+function buildPalette() {
+    const now = new Date();
+    const mins = now.getHours() * 60 + now.getMinutes();
+    const frac = mins / 1440;
+    const hue  = frac * 360;
+    const hue2 = (hue + 150) % 360;
+    const sat  = 85 + 15 * Math.sin(frac * Math.PI * 2);
+    const lit  = 58 + 6  * Math.cos(frac * Math.PI * 4);
+    function hsl2hex(h, s, l) {
+        h/=360; s/=100; l/=100;
+        const q = l<0.5 ? l*(1+s) : l+s-l*s, p = 2*l-q;
+        const f = (t) => { t=((t%1)+1)%1; if(t<1/6)return p+(q-p)*6*t; if(t<.5)return q; if(t<2/3)return p+(q-p)*(2/3-t)*6; return p; };
+        return '#'+[h+1/3,h,h-1/3].map(x=>Math.round(f(x)*255).toString(16).padStart(2,'0')).join('');
+    }
+    function hsl2rgb(h,s,l){ const x=hsl2hex(h,s,l); return [1,3,5].map(i=>parseInt(x.slice(i,i+2),16)).join(','); }
+    return { ac:hsl2hex(hue,sat,lit), ar:hsl2rgb(hue,sat,lit), a2:hsl2hex(hue2,sat,lit), a2r:hsl2rgb(hue2,sat,lit), name:`${Math.round(hue)}°` };
 }
 
 function getSystemColor(){
     try{
-        const d=document.createElement('div');
-        d.style.color='AccentColor'; document.body.appendChild(d);
+        const d=document.createElement('div'); d.style.color='AccentColor'; document.body.appendChild(d);
         const c=getComputedStyle(d).color; document.body.removeChild(d);
         const m=c.match(/\d+/g);
-        if(m&&m.length>=3){
-            const r=+m[0],g=+m[1],b=+m[2];
-            if(r+g+b>30&&r+g+b<720){
-                return{ac:`#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`,ar:`${r},${g},${b}`,a2:'#7c3fff',a2r:'124,63,255',name:'Système'};
-            }
-        }
+        if(m&&m.length>=3){const r=+m[0],g=+m[1],b=+m[2];if(r+g+b>30&&r+g+b<720)return{ac:`#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`,ar:`${r},${g},${b}`,a2:'#7c3fff',a2r:'124,63,255',name:'SYS'};}
     }catch(e){}
     return null;
 }
 
+function applyPalette(p, src){
+    const r = document.documentElement;
+    r.style.setProperty('--accent',      p.ac);
+    r.style.setProperty('--accent-rgb',  p.ar);
+    r.style.setProperty('--accent-glow', `rgba(${p.ar},0.14)`);
+    r.style.setProperty('--accent2',     p.a2);
+    r.style.setProperty('--accent2-rgb', p.a2r);
+    document.getElementById('grid-bg').style.backgroundImage=`linear-gradient(rgba(${p.ar},0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(${p.ar},0.022) 1px,transparent 1px)`;
+    document.getElementById('cswatch').style.cssText=`background:${p.ac};box-shadow:0 0 6px ${p.ac};width:8px;height:8px;border-radius:50%;`;
+    document.getElementById('clrlbl').textContent=(src==='SYS'?'SYS ':'HSL ')+p.name;
+    const b=document.getElementById('nav-badge'); if(b) b.textContent=src==='SYS'?'SYS':p.name;
+}
+
 function nextColor(){
-    pidx=(pidx+1)%PALETTES.length;
-    applyPalette(PALETTES[pidx]);
+    // Avancer d'1h dans l'algorithme
+    const now=new Date(); now.setHours(now.getHours()+1);
+    const mins=now.getHours()*60+now.getMinutes(), frac=mins/1440, hue=frac*360, hue2=(hue+150)%360;
+    const sat=85+15*Math.sin(frac*Math.PI*2), lit=58+6*Math.cos(frac*Math.PI*4);
+    function hsl2hex(h,s,l){h/=360;s/=100;l/=100;const q=l<0.5?l*(1+s):l+s-l*s,p=2*l-q,f=(t)=>{t=((t%1)+1)%1;if(t<1/6)return p+(q-p)*6*t;if(t<.5)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};return '#'+[h+1/3,h,h-1/3].map(x=>Math.round(f(x)*255).toString(16).padStart(2,'0')).join('');}
+    function hsl2rgb(h,s,l){const x=hsl2hex(h,s,l);return[1,3,5].map(i=>parseInt(x.slice(i,i+2),16)).join(',');}
+    applyPalette({ac:hsl2hex(hue,sat,lit),ar:hsl2rgb(hue,sat,lit),a2:hsl2hex(hue2,sat,lit),a2r:hsl2rgb(hue2,sat,lit),name:`${Math.round(hue)}°`},'HSL');
     document.body.style.filter='brightness(1.12)';
     setTimeout(()=>{document.body.style.filter='';},320);
 }
 
 // Init
 (function(){
-    const sys=getSystemColor();
+    const sys = getSystemColor();
     if(sys){ applyPalette(sys,'SYS'); }
-    else{
-        pidx=Math.floor(Math.random()*PALETTES.length);
-        applyPalette(PALETTES[pidx],'RNG');
+    else {
+        const p = buildPalette();
+        applyPalette(p,'HSL');
+        // Recalcul chaque minute
+        setInterval(()=>{ applyPalette(buildPalette(),'HSL'); }, 60000);
     }
 })();
 
