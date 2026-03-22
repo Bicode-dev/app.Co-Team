@@ -1,738 +1,685 @@
 <!DOCTYPE html>
+<!-- 
+  ██████╗ ██████╗     ██╗  ██╗██╗   ██╗██████╗ 
+  ██╔════╝██╔═══██╗   ██║  ██║██║   ██║██╔══██╗
+  ██║     ██║   ██║   ███████║██║   ██║██████╔╝
+  ██║     ██║   ██║   ██╔══██║██║   ██║██╔══██╗
+  ╚██████╗╚██████╔╝   ██║  ██║╚██████╔╝██████╔╝
+   ╚═════╝ ╚═════╝    ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ 
+  
+  « les droits humains compteront toujours plus que les droits d'auteur. »
+  — Bicode-dev, 2026
+-->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="CO — Tous les outils Bicode-dev : Co-Menu, Co-Chan, Co-Tube. Téléchargeurs ultra-rapides open-source.">
+    <meta name="description" content="CO — Tous les outils Bicode-dev : Co-Menu, Co-Chan, Co-Tube.">
     <title>CO • Hub — Tous les projets</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap');
-
         *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(to bottom, #333333, #111111);
-            color: #e0e0e0;
-            line-height: 1.6;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        a { color: inherit; text-decoration: none; }
-        ul { list-style: none; }
-
         :root {
-            --bg:        #222222;
-            --card:      #333333;
-            --border:    #444444;
-            --text:      #e0e0e0;
-            --muted:     #888888;
-            --light:     #aaaaaa;
-            --accent:    #a9a9a9;
-            --secondary: #87ceeb;
+            --bg:#04040a; --surface:#070710; --card:#0a0a16;
+            --border:#181828; --border-hi:#262640;
+            --text:#d0d0e8; --muted:#444460; --light:#8888aa;
+            --accent:#00cfff; --accent-rgb:0,207,255; --accent-glow:rgba(0,207,255,0.14);
+            --accent2:#7c3fff; --accent2-rgb:124,63,255;
+            --green:#00ff88; --warn:#ffb700;
+        }
+        html { scroll-behavior:smooth; }
+        body { font-family:'Barlow',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; min-height:100vh; overflow-x:hidden; transition:filter 0.3s; }
+        a { color:inherit; text-decoration:none; }
+        ul { list-style:none; }
+
+        /* GRAIN */
+        #grain {
+            position:fixed; inset:0; z-index:9999; pointer-events:none; opacity:0.04;
+            background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-size:180px; animation:grainShift 0.12s steps(1) infinite;
+        }
+        @keyframes grainShift { 0%{transform:translate(0,0);} 25%{transform:translate(-3px,2px);} 50%{transform:translate(3px,-2px);} 75%{transform:translate(-1px,3px);} }
+
+        /* SCANLINES */
+        #scanlines {
+            position:fixed; inset:0; z-index:9998; pointer-events:none;
+            background:repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px);
         }
 
-        /* ── NAV ─────────────────────────────────────────── */
+        /* GRID */
+        #grid-bg {
+            position:fixed; inset:0; z-index:0; pointer-events:none;
+            background-image:
+                linear-gradient(rgba(var(--accent-rgb),0.022) 1px,transparent 1px),
+                linear-gradient(90deg,rgba(var(--accent-rgb),0.022) 1px,transparent 1px);
+            background-size:64px 64px; transition:background-image 0.5s;
+        }
+
+        /* AMBIENT */
+        #ambient {
+            position:fixed; inset:0; z-index:0; pointer-events:none;
+            background:
+                radial-gradient(ellipse 65% 55% at 10% 25%, rgba(var(--accent-rgb),0.055) 0%, transparent 65%),
+                radial-gradient(ellipse 55% 65% at 90% 75%, rgba(var(--accent2-rgb),0.04) 0%, transparent 65%);
+            animation:ambPulse 8s ease-in-out infinite alternate;
+        }
+        @keyframes ambPulse { from{opacity:0.5;} to{opacity:1;} }
+
+        /* PARTICLES */
+        #particles { position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden; }
+        .particle { position:absolute; border-radius:50%; opacity:0; animation:rise linear infinite; }
+        @keyframes rise { 0%{opacity:0;transform:translateY(0) scale(1);} 10%{opacity:0.8;} 90%{opacity:0.2;} 100%{opacity:0;transform:translateY(-110vh) scale(0.2);} }
+
+        /* STATUS BAR */
+        #statusbar {
+            position:fixed; top:0; left:0; right:0; z-index:2000;
+            height:26px; background:rgba(4,4,10,0.98);
+            border-bottom:1px solid var(--border);
+            display:flex; align-items:center; padding:0 20px; gap:20px;
+            font-family:'Share Tech Mono',monospace; font-size:0.62rem; letter-spacing:1.5px; color:var(--muted);
+        }
+        .sb { display:flex; align-items:center; gap:5px; }
+        .sbd { width:5px; height:5px; border-radius:50%; }
+        .sbd.g { background:var(--green); box-shadow:0 0 5px var(--green); animation:blink 2.4s ease infinite; }
+        .sbd.w { background:var(--warn); box-shadow:0 0 5px var(--warn); animation:blink 2.4s ease infinite 0.8s; }
+        .sbd.a { background:var(--accent); box-shadow:0 0 5px var(--accent); animation:blink 2.4s ease infinite 1.6s; }
+        @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+        #sb-clock { margin-left:auto; color:var(--accent); font-size:0.65rem; }
+
+        /* NAV */
         nav {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            background: rgba(51,51,51,0.95);
-            backdrop-filter: blur(12px);
-            z-index: 1000;
-            padding: 18px 0;
-            border-bottom: 1px solid var(--border);
-            animation: navSlide 0.8s ease-out;
+            position:fixed; top:26px; left:0; right:0; z-index:1000;
+            background:rgba(4,4,10,0.88); backdrop-filter:blur(28px) saturate(200%);
+            border-bottom:1px solid var(--border); animation:navIn 0.8s ease-out;
         }
-        @keyframes navSlide {
-            from { transform: translateY(-100%); }
-            to   { transform: translateY(0); }
-        }
-        nav ul {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .nav-logo {
-            font-weight: 900;
-            font-size: 1.25rem;
-            letter-spacing: 3px;
-            background: linear-gradient(90deg, var(--accent), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        nav a {
-            font-weight: 600;
-            font-size: 1rem;
-            padding: 8px 0;
-            position: relative;
-            transition: color 0.3s, transform 0.3s;
-            color: var(--accent);
-        }
-        nav a:hover { color: var(--secondary); transform: scale(1.1); }
-        nav a::after {
-            content: '';
-            position: absolute;
-            width: 0; height: 2px;
-            bottom: 0; left: 50%;
-            background: var(--secondary);
-            transition: width 0.3s, left 0.3s;
-        }
-        nav a:hover::after { width: 100%; left: 0; }
+        @keyframes navIn { from{transform:translateY(-100%);opacity:0;} to{transform:translateY(0);opacity:1;} }
+        .nav-in { max-width:1360px; margin:0 auto; padding:0 40px; height:60px; display:flex; align-items:center; justify-content:space-between; }
+        .nav-logo { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.2rem; letter-spacing:8px; color:var(--accent); text-transform:uppercase; display:flex; align-items:center; gap:12px; }
+        .nav-pulse { width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 12px var(--accent),0 0 24px rgba(var(--accent-rgb),0.4); animation:logoPulse 2.2s infinite; }
+        @keyframes logoPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(0.6); box-shadow:0 0 4px var(--accent);} }
+        .nav-links { display:flex; gap:4px; }
+        .nav-links a { font-family:'Rajdhani',sans-serif; font-weight:600; font-size:0.8rem; letter-spacing:2.5px; text-transform:uppercase; padding:6px 14px; color:var(--muted); border:1px solid transparent; border-radius:3px; transition:all 0.25s; }
+        .nav-links a:hover { color:var(--accent); border-color:var(--border-hi); background:var(--accent-glow); text-shadow:0 0 10px rgba(var(--accent-rgb),0.5); }
+        .nav-badge { font-family:'Share Tech Mono',monospace; font-size:0.62rem; color:var(--muted); padding:4px 10px; border:1px solid var(--border); border-radius:3px; letter-spacing:1px; }
 
-        /* ── HERO ─────────────────────────────────────────── */
+        /* HERO */
         #hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 100px 20px 60px;
-            position: relative;
-            overflow: hidden;
+            min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;
+            text-align:center; padding:140px 20px 100px; position:relative; overflow:hidden;
         }
-        .hero-eyebrow {
-            font-size: 0.95rem;
-            letter-spacing: 6px;
-            text-transform: uppercase;
-            color: var(--secondary);
-            margin-bottom: 18px;
-            animation: fadeUp 1s ease-out 0.2s both;
+        /* diagonal lines */
+        #hero::before {
+            content:''; position:absolute; inset:0; pointer-events:none;
+            background:linear-gradient(45deg,transparent 49%,rgba(var(--accent-rgb),0.012) 50%,transparent 51%),linear-gradient(-45deg,transparent 49%,rgba(var(--accent2-rgb),0.012) 50%,transparent 51%);
+            background-size:80px 80px;
         }
+        .hero-badge {
+            display:inline-flex; align-items:center; gap:10px;
+            background:rgba(var(--accent-rgb),0.07); border:1px solid rgba(var(--accent-rgb),0.18);
+            border-radius:2px; padding:6px 18px;
+            font-family:'Share Tech Mono',monospace; font-size:0.7rem; letter-spacing:3px; text-transform:uppercase;
+            color:var(--accent); margin-bottom:40px; animation:fadeUp 1s ease-out 0.2s both;
+        }
+        .hbd { width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation:blink 1.8s infinite; }
         #hero h1 {
-            font-size: 6rem;
-            font-weight: 900;
-            letter-spacing: 8px;
-            margin-bottom: 8px;
-            background: linear-gradient(90deg, var(--accent), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            user-select: none;
-            animation: glow 2.5s ease-in-out infinite alternate, bounce 3s ease-in-out infinite, fadeUp 1s ease-out 0.4s both;
+            font-family:'Rajdhani',sans-serif;
+            font-size:clamp(5rem,18vw,11rem);
+            font-weight:700; letter-spacing:0.18em; color:var(--accent); line-height:1;
+            text-shadow:0 0 30px rgba(var(--accent-rgb),0.5),0 0 80px rgba(var(--accent-rgb),0.2),0 0 160px rgba(var(--accent-rgb),0.08);
+            animation:fadeUp 1s ease-out 0.4s both, titleGlow 4s ease-in-out infinite alternate;
+            user-select:none; position:relative; margin-bottom:0;
         }
-        .hero-sub {
-            font-size: 1.15rem;
-            color: var(--muted);
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-            animation: fadeUp 1s ease-out 0.6s both;
+        @keyframes titleGlow {
+            from { text-shadow:0 0 30px rgba(var(--accent-rgb),0.4),0 0 80px rgba(var(--accent-rgb),0.15); }
+            to   { text-shadow:0 0 60px rgba(var(--accent-rgb),0.9),0 0 130px rgba(var(--accent-rgb),0.3),0 0 220px rgba(var(--accent-rgb),0.12); }
         }
-        #hero p.hero-desc {
-            font-size: 1.3rem;
-            max-width: 720px;
-            margin-bottom: 60px;
-            color: var(--light);
-            animation: fadeUp 1s ease-out 0.8s both;
-        }
-        .hero-scroll {
-            margin-top: 20px;
-            animation: fadeUp 1s ease-out 1.2s both, arrowBounce 1.6s ease-in-out infinite;
-            color: var(--muted);
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-        }
-        .hero-scroll span { display: block; font-size: 1.5rem; }
+        /* GLITCH */
+        #hero h1::before, #hero h1::after { content:attr(data-text); position:absolute; top:0; left:0; right:0; opacity:0; }
+        #hero h1::before { color:#ff0055; animation:glitch1 7s infinite; clip-path:polygon(0 20%,100% 20%,100% 45%,0 45%); }
+        #hero h1::after  { color:#00ffff; animation:glitch2 7s infinite; clip-path:polygon(0 60%,100% 60%,100% 80%,0 80%); }
+        @keyframes glitch1 { 0%,94%,100%{opacity:0;transform:none;} 95%{opacity:0.7;transform:translateX(-5px) skewX(-3deg);} 96%{opacity:0;} 97%{opacity:0.4;transform:translateX(4px);} }
+        @keyframes glitch2 { 0%,93%,100%{opacity:0;transform:none;} 94%{opacity:0.6;transform:translateX(5px) skewX(2deg);} 95%{opacity:0;} 96%{opacity:0.3;transform:translateX(-3px);} }
 
-        @keyframes glow {
-            from { filter: drop-shadow(0 0 8px rgba(169,169,169,0.5)); }
-            to   { filter: drop-shadow(0 0 22px rgba(135,206,235,0.7)); }
-        }
-        @keyframes bounce {
-            0%,100% { transform: translateY(0); }
-            50%      { transform: translateY(-10px); }
-        }
-        @keyframes fadeUp {
-            from { opacity:0; transform: translateY(24px); }
-            to   { opacity:1; transform: translateY(0); }
-        }
-        @keyframes arrowBounce {
-            0%,100% { transform: translateY(0); }
-            50%      { transform: translateY(8px); }
-        }
+        .hero-sub { font-family:'Share Tech Mono',monospace; font-size:clamp(0.65rem,2vw,0.9rem); letter-spacing:0.5em; text-transform:uppercase; color:var(--muted); margin-bottom:28px; animation:fadeUp 1s ease-out 0.6s both; }
+        .hero-desc { font-size:1.05rem; max-width:580px; margin-bottom:48px; color:var(--light); font-weight:300; line-height:1.85; animation:fadeUp 1s ease-out 0.8s both; }
+        .hero-cta { display:flex; gap:14px; align-items:center; justify-content:center; flex-wrap:wrap; animation:fadeUp 1s ease-out 1s both; }
 
-        /* ── STATS BAR ───────────────────────────────────── */
+        .btn-pri {
+            display:inline-flex; align-items:center; gap:10px; padding:15px 44px;
+            background:transparent; color:var(--accent);
+            font-family:'Rajdhani',sans-serif; font-size:0.95rem; font-weight:700;
+            letter-spacing:4px; text-transform:uppercase;
+            border:1px solid var(--accent); border-radius:2px; transition:all 0.3s; position:relative; overflow:hidden;
+        }
+        .btn-pri::before { content:''; position:absolute; inset:0; background:var(--accent); transform:translateX(-101%); transition:transform 0.3s; z-index:-1; }
+        .btn-pri:hover { color:var(--bg); box-shadow:0 0 40px rgba(var(--accent-rgb),0.5); }
+        .btn-pri:hover::before { transform:translateX(0); }
+        .btn-sec {
+            display:inline-flex; align-items:center; gap:8px; padding:15px 32px;
+            background:transparent; color:var(--light);
+            font-family:'Rajdhani',sans-serif; font-size:0.95rem; font-weight:600;
+            letter-spacing:3px; text-transform:uppercase;
+            border:1px solid var(--border-hi); border-radius:2px; transition:all 0.3s;
+        }
+        .btn-sec:hover { color:var(--text); border-color:var(--light); }
+
+        .hero-scroll { position:absolute; bottom:40px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:10px; animation:fadeUp 1s ease-out 1.4s both; }
+        .hero-scroll-txt { font-family:'Share Tech Mono',monospace; font-size:0.62rem; letter-spacing:3px; color:var(--muted); }
+        .hero-scroll-ln { width:1px; height:50px; background:linear-gradient(to bottom,var(--accent),transparent); animation:scrollLn 2s ease-in-out infinite; }
+        @keyframes scrollLn { 0%,100%{transform:scaleY(1);opacity:1;} 50%{transform:scaleY(0.3);opacity:0.3;} }
+
+        @keyframes fadeUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
+
+        /* STATS */
         .stats-bar {
-            display: flex;
-            justify-content: center;
-            gap: 60px;
-            flex-wrap: wrap;
-            margin-top: 0;
-            padding: 50px 20px;
-            background: rgba(51,51,51,0.6);
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-            animation: fadeUp 1s ease-out 1s both;
+            display:flex; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+            background:var(--surface); position:relative; z-index:10; overflow:hidden;
         }
-        .stat {
-            text-align: center;
+        .stats-bar::before {
+            content:''; position:absolute; top:0; left:-100%; width:200%; height:2px;
+            background:linear-gradient(90deg,transparent,var(--accent),var(--accent2),transparent);
+            animation:scanBeam 5s linear infinite;
         }
-        .stat-num {
-            font-size: 2.8rem;
-            font-weight: 900;
-            background: linear-gradient(90deg, var(--accent), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .stat-label {
-            font-size: 0.85rem;
-            color: var(--muted);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
+        @keyframes scanBeam { from{left:-100%;} to{left:100%;} }
+        .stat { flex:1; text-align:center; padding:44px 16px; border-right:1px solid var(--border); position:relative; transition:background 0.3s; }
+        .stat:last-child { border-right:none; }
+        .stat:hover { background:rgba(var(--accent-rgb),0.04); }
+        .stat-num { font-family:'Rajdhani',sans-serif; font-size:2.8rem; font-weight:700; color:var(--accent); letter-spacing:2px; line-height:1; text-shadow:0 0 20px rgba(var(--accent-rgb),0.4); }
+        .stat-label { font-family:'Share Tech Mono',monospace; font-size:0.63rem; color:var(--muted); letter-spacing:2.5px; text-transform:uppercase; margin-top:8px; }
+        .stat-underline { position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:2px; border-radius:1px; background:var(--accent); box-shadow:0 0 8px var(--accent); animation:statUl 3s ease-in-out infinite alternate; }
+        @keyframes statUl { from{width:15%;opacity:0.3;} to{width:55%;opacity:1;} }
 
-        /* ── SECTION ─────────────────────────────────────── */
-        section {
-            padding: 120px 20px;
-            max-width: 1300px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 10;
-        }
-        h2 {
-            font-size: 3rem;
-            text-align: center;
-            margin-bottom: 70px;
-            color: var(--accent);
-            animation: fadeIn 1s ease-in;
-        }
-        h2::after {
-            content: '';
-            width: 100px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--accent), var(--secondary));
-            display: block;
-            margin: 18px auto 0;
-            border-radius: 2px;
-        }
-        @keyframes fadeIn {
-            from { opacity:0; transform: translateY(-16px); }
-            to   { opacity:1; transform: translateY(0); }
-        }
+        /* SECTION */
+        .swrap { position:relative; z-index:10; }
+        .sinr { max-width:1360px; margin:0 auto; padding:120px 40px; }
+        .shdr { text-align:center; margin-bottom:72px; }
+        .seye { font-family:'Share Tech Mono',monospace; font-size:0.68rem; letter-spacing:5px; color:var(--accent); text-transform:uppercase; margin-bottom:14px; opacity:0.7; display:block; }
+        .seye::before { content:'⬡ '; }
+        h2 { font-family:'Rajdhani',sans-serif; font-size:clamp(2rem,5vw,3rem); font-weight:700; color:var(--text); letter-spacing:4px; text-transform:uppercase; line-height:1.1; }
+        .h2ln { display:flex; align-items:center; justify-content:center; gap:16px; margin-top:20px; }
+        .h2bar { flex:1; max-width:100px; height:1px; background:var(--border); }
+        .h2dot { width:6px; height:6px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); }
 
-        /* ── PROJECT CARDS ───────────────────────────────── */
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-            gap: 40px;
+        /* PROJECT CARDS */
+        .pgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:24px; }
+        .pcard {
+            background:var(--card); border:1px solid var(--border); border-radius:4px;
+            padding:52px 38px; text-align:center; position:relative; overflow:hidden;
+            transition:all 0.45s cubic-bezier(.23,1,.32,1); cursor:default;
         }
-        .project-card {
-            background: var(--card);
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            padding: 50px 40px;
-            text-align: center;
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-            animation: cardPop 0.6s ease-out both;
+        /* top bar */
+        .pcard::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; transform:scaleX(0.25); transform-origin:left; transition:transform 0.5s ease; }
+        .pcard:hover::before { transform:scaleX(1); }
+        .cm::before  { background:linear-gradient(90deg,var(--accent),var(--accent2)); box-shadow:0 0 20px var(--accent); }
+        .cc::before  { background:linear-gradient(90deg,#ff6eb4,#ff33aa); box-shadow:0 0 20px #ff6eb4; }
+        .ct::before  { background:linear-gradient(90deg,#ff5c38,#ff9500); box-shadow:0 0 20px #ff5c38; }
+        /* shimmer */
+        .pcard::after { content:''; position:absolute; inset:0; opacity:0; transition:opacity 0.4s; background:linear-gradient(110deg,transparent 40%,rgba(255,255,255,0.022) 50%,transparent 60%); pointer-events:none; }
+        .pcard:hover::after { opacity:1; }
+        /* corners */
+        .cc-tl,.cc-tr,.cc-bl,.cc-br { position:absolute; width:14px; height:14px; border-color:var(--border-hi); border-style:solid; border-width:0; transition:all 0.35s; }
+        .cc-tl { top:10px; left:10px; border-top-width:1px; border-left-width:1px; }
+        .cc-tr { top:10px; right:10px; border-top-width:1px; border-right-width:1px; }
+        .cc-bl { bottom:10px; left:10px; border-bottom-width:1px; border-left-width:1px; }
+        .cc-br { bottom:10px; right:10px; border-bottom-width:1px; border-right-width:1px; }
+        .pcard:hover .cc-tl,.pcard:hover .cc-tr,.pcard:hover .cc-bl,.pcard:hover .cc-br { width:20px; height:20px; }
+        .cm:hover .cc-tl,.cm:hover .cc-tr,.cm:hover .cc-bl,.cm:hover .cc-br { border-color:var(--accent); }
+        .cc:hover .cc-tl,.cc:hover .cc-tr,.cc:hover .cc-bl,.cc:hover .cc-br { border-color:#ff6eb4; }
+        .ct:hover .cc-tl,.ct:hover .cc-tr,.ct:hover .cc-bl,.ct:hover .cc-br { border-color:#ff5c38; }
+        /* hover states */
+        .pcard:hover { transform:translateY(-10px); border-color:var(--border-hi); }
+        .cm:hover { box-shadow:0 24px 70px rgba(0,207,255,0.13); }
+        .cc:hover { box-shadow:0 24px 70px rgba(255,110,180,0.13); border-color:rgba(255,110,180,0.25); }
+        .ct:hover { box-shadow:0 24px 70px rgba(255,92,56,0.13); border-color:rgba(255,92,56,0.25); }
+        /* card content */
+        .c-icon { font-size:3.2rem; margin-bottom:22px; display:block; animation:iconFloat 4s ease-in-out infinite; }
+        .pcard:nth-child(2) .c-icon { animation-delay:1.3s; }
+        .pcard:nth-child(3) .c-icon { animation-delay:2.6s; }
+        @keyframes iconFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+        .c-title { font-family:'Rajdhani',sans-serif; font-size:1.85rem; font-weight:700; letter-spacing:5px; text-transform:uppercase; margin-bottom:4px; }
+        .cm .c-title { color:var(--accent); text-shadow:0 0 20px rgba(var(--accent-rgb),0.4); }
+        .cc .c-title { color:#ff6eb4; text-shadow:0 0 20px rgba(255,110,180,0.4); }
+        .ct .c-title { color:#ff5c38; text-shadow:0 0 20px rgba(255,92,56,0.4); }
+        .c-tag { font-family:'Share Tech Mono',monospace; font-size:0.68rem; letter-spacing:3px; text-transform:uppercase; color:var(--muted); margin-bottom:22px; }
+        .c-desc { font-size:0.93rem; color:var(--light); margin-bottom:26px; line-height:1.8; font-weight:300; }
+        .c-tags { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:34px; }
+        .ctag { padding:3px 11px; border-radius:2px; font-family:'Share Tech Mono',monospace; font-size:0.64rem; letter-spacing:1px; text-transform:uppercase; border:1px solid; transition:background 0.2s; }
+        .cm .ctag { border-color:rgba(0,207,255,0.2); color:var(--accent); background:rgba(0,207,255,0.04); }
+        .cc .ctag { border-color:rgba(255,110,180,0.2); color:#ff6eb4; background:rgba(255,110,180,0.04); }
+        .ct .ctag { border-color:rgba(255,92,56,0.2); color:#ff5c38; background:rgba(255,92,56,0.04); }
+        .ctag:hover { background:rgba(255,255,255,0.06); }
+        .c-btn {
+            display:inline-flex; align-items:center; gap:8px; padding:12px 34px; border-radius:2px;
+            font-family:'Rajdhani',sans-serif; font-size:0.86rem; font-weight:700; letter-spacing:3px; text-transform:uppercase;
+            border:1px solid; transition:all 0.3s; position:relative; overflow:hidden;
         }
-        .project-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            opacity: 0;
-            transition: opacity 0.4s;
-        }
-        .project-card.card-menu::before   { background: linear-gradient(135deg, rgba(135,206,235,0.06), transparent 60%); }
-        .project-card.card-chan::before   { background: linear-gradient(135deg, rgba(255,182,193,0.08), transparent 60%); }
-        .project-card.card-tube::before   { background: linear-gradient(135deg, rgba(255,99,71,0.07),   transparent 60%); }
+        .c-btn-arr { transition:transform 0.3s; }
+        .c-btn:hover .c-btn-arr { transform:translateX(5px); }
+        .c-btn::before { content:''; position:absolute; inset:0; transform:translateX(-101%); transition:transform 0.3s; z-index:-1; }
+        .c-btn:hover::before { transform:translateX(0); }
+        .cm .c-btn { color:var(--accent); border-color:var(--accent); }
+        .cm .c-btn::before { background:var(--accent); }
+        .cm .c-btn:hover { color:var(--bg); box-shadow:0 0 24px rgba(0,207,255,0.4); }
+        .cc .c-btn { color:#ff6eb4; border-color:#ff6eb4; }
+        .cc .c-btn::before { background:#ff6eb4; }
+        .cc .c-btn:hover { color:var(--bg); box-shadow:0 0 24px rgba(255,110,180,0.4); }
+        .ct .c-btn { color:#ff5c38; border-color:#ff5c38; }
+        .ct .c-btn::before { background:#ff5c38; }
+        .ct .c-btn:hover { color:var(--bg); box-shadow:0 0 24px rgba(255,92,56,0.4); }
 
-        .project-card:hover {
-            transform: translateY(-14px) scale(1.01);
-            border-color: var(--secondary);
-            box-shadow: 0 24px 60px rgba(135,206,235,0.25);
-        }
-        .project-card:hover::before { opacity: 1; }
+        /* FEATURES */
+        .fgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); gap:20px; }
+        .fcard { background:var(--card); padding:34px 26px; border-radius:4px; border:1px solid var(--border); transition:all 0.35s; position:relative; overflow:hidden; }
+        .fcard::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--accent); transform:scaleY(0); transform-origin:bottom; transition:transform 0.4s; box-shadow:0 0 8px var(--accent); }
+        .fcard:hover::before { transform:scaleY(1); }
+        .fcard:hover { border-color:var(--border-hi); transform:translateX(6px); background:#0d0d1c; box-shadow:4px 0 20px rgba(var(--accent-rgb),0.08); }
+        .f-icon { font-size:2rem; display:block; margin-bottom:14px; }
+        .fcard h3 { font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin-bottom:10px; }
+        .fcard p { font-size:0.87rem; color:var(--muted); font-weight:300; line-height:1.7; }
 
-        .card-menu:hover  { border-color: var(--secondary); }
-        .card-chan:hover  { border-color: #ffb6c1; box-shadow: 0 24px 60px rgba(255,182,193,0.2); }
-        .card-tube:hover  { border-color: #ff6347; box-shadow: 0 24px 60px rgba(255,99,71,0.2); }
+        /* TERMINAL */
+        .terminal { background:#020208; border:1px solid var(--border); border-radius:6px; overflow:hidden; max-width:760px; margin:56px auto 0; }
+        .t-hdr { background:#080810; padding:12px 18px; display:flex; align-items:center; gap:7px; border-bottom:1px solid var(--border); }
+        .td { width:10px; height:10px; border-radius:50%; }
+        .td.r{background:#ff5f57;} .td.y{background:#ffbd2e;} .td.g{background:#28c840;}
+        .t-ttl { font-family:'Share Tech Mono',monospace; font-size:0.68rem; color:var(--muted); letter-spacing:2px; margin-left:8px; }
+        .t-body { padding:22px 24px; font-family:'Share Tech Mono',monospace; font-size:0.8rem; line-height:2.1; }
+        .t-cmt { color:var(--muted); }
+        .t-prm { color:var(--accent); }
+        .t-cmd { color:var(--text); }
+        .t-ok  { color:var(--green); }
+        .t-cur { display:inline-block; width:8px; height:14px; background:var(--accent); vertical-align:middle; animation:tcur 1s step-end infinite; }
+        @keyframes tcur { 0%,100%{opacity:1;} 50%{opacity:0;} }
 
-        @keyframes cardPop {
-            from { opacity:0; transform: scale(0.94) translateY(20px); }
-            to   { opacity:1; transform: scale(1) translateY(0); }
-        }
-        .project-card:nth-child(1) { animation-delay: 0.1s; }
-        .project-card:nth-child(2) { animation-delay: 0.25s; }
-        .project-card:nth-child(3) { animation-delay: 0.4s; }
+        /* DIVIDER */
+        .dvd { height:1px; background:linear-gradient(90deg,transparent,var(--border),var(--border),transparent); }
 
-        .card-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            display: block;
-            animation: iconFloat 3s ease-in-out infinite;
+        /* CONTACT */
+        .ctsec { background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:140px 40px; text-align:center; position:relative; overflow:hidden; }
+        .ctsec::before { content:''; position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse 70% 80% at 50% 50%,rgba(var(--accent2-rgb),0.04) 0%,transparent 70%); }
+        .ct-in { position:relative; z-index:2; }
+        .disc-btn {
+            display:inline-flex; align-items:center; gap:12px; padding:18px 56px;
+            background:transparent; color:var(--accent);
+            font-family:'Rajdhani',sans-serif; font-size:1.1rem; font-weight:700;
+            letter-spacing:4px; text-transform:uppercase;
+            border:1px solid var(--accent); border-radius:2px;
+            margin:40px 0; transition:all 0.35s; position:relative; overflow:hidden;
         }
-        .project-card:nth-child(2) .card-icon { animation-delay: 0.5s; }
-        .project-card:nth-child(3) .card-icon { animation-delay: 1s; }
-        @keyframes iconFloat {
-            0%,100% { transform: translateY(0) rotate(-2deg); }
-            50%      { transform: translateY(-8px) rotate(2deg); }
-        }
+        .disc-btn::before { content:''; position:absolute; inset:0; background:var(--accent); transform:translateX(-101%); transition:transform 0.35s; z-index:-1; }
+        .disc-btn:hover { color:var(--bg); box-shadow:0 0 50px rgba(var(--accent-rgb),0.55); }
+        .disc-btn:hover::before { transform:translateX(0); }
+        .ct-links { display:flex; justify-content:center; gap:24px; flex-wrap:wrap; margin-top:40px; }
+        .ct-lnk { font-family:'Share Tech Mono',monospace; font-size:0.72rem; letter-spacing:2px; color:var(--muted); transition:color 0.2s; padding:5px 0; border-bottom:1px solid transparent; }
+        .ct-lnk:hover { color:var(--accent); border-bottom-color:var(--accent); }
 
-        .card-title {
-            font-size: 2rem;
-            font-weight: 900;
-            letter-spacing: 3px;
-            margin-bottom: 6px;
-        }
-        .card-menu   .card-title { background: linear-gradient(90deg, var(--accent), var(--secondary)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-        .card-chan   .card-title { background: linear-gradient(90deg, #ffb6c1, #ff8fa3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-        .card-tube   .card-title { background: linear-gradient(90deg, #ff8c69, #ff4500); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        /* FOOTER */
+        footer { background:var(--bg); border-top:1px solid var(--border); padding:70px 40px; text-align:center; font-size:0.88rem; color:var(--muted); }
+        .f-logo { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.4rem; letter-spacing:12px; color:var(--accent); margin-bottom:10px; text-shadow:0 0 20px rgba(var(--accent-rgb),0.35); }
+        .f-tag { font-family:'Share Tech Mono',monospace; font-size:0.68rem; letter-spacing:3px; color:var(--muted); margin-bottom:36px; }
+        .lic-badge { display:inline-flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--border); border-radius:3px; padding:8px 18px; margin:12px 0; font-family:'Share Tech Mono',monospace; font-size:0.7rem; color:var(--accent); transition:all 0.25s; }
+        .lic-badge:hover { border-color:var(--accent); background:rgba(var(--accent-rgb),0.05); }
+        .f-dmca { max-width:800px; margin:36px auto 0; text-align:left; }
+        .f-dmca h3 { font-family:'Rajdhani',sans-serif; letter-spacing:4px; text-transform:uppercase; color:var(--accent); margin-bottom:12px; font-size:0.95rem; }
+        .f-dmca ul { margin:10px 0 10px 20px; list-style:disc; color:var(--muted); }
+        .f-dmca li { margin-bottom:4px; font-size:0.83rem; }
 
-        .card-tagline {
-            font-size: 0.82rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--muted);
-            margin-bottom: 22px;
-        }
-        .card-desc {
-            font-size: 1rem;
-            color: var(--light);
-            margin-bottom: 30px;
-            line-height: 1.7;
-        }
-        .card-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            justify-content: center;
-            margin-bottom: 36px;
-        }
-        .tag {
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            border: 1px solid var(--border);
-            color: var(--muted);
-            background: rgba(255,255,255,0.04);
-        }
-        .card-menu  .tag { border-color: rgba(135,206,235,0.3); color: var(--secondary); }
-        .card-chan  .tag { border-color: rgba(255,182,193,0.3); color: #ffb6c1; }
-        .card-tube  .tag { border-color: rgba(255,99,71,0.3);   color: #ff8c69; }
+        /* EASTER */
+        #etrig { position:fixed; bottom:22px; right:22px; z-index:500; width:9px; height:9px; border-radius:50%; background:rgba(var(--accent-rgb),0.12); cursor:pointer; transition:all 0.3s; }
+        #etrig:hover { background:var(--accent); box-shadow:0 0 20px var(--accent); transform:scale(2); }
+        #emod { position:fixed; inset:0; z-index:9000; display:none; justify-content:center; align-items:center; background:rgba(0,0,0,0.92); backdrop-filter:blur(24px); }
+        #emod.on { display:flex; }
+        .ebox { border:1px solid var(--accent); border-radius:4px; padding:60px 72px; text-align:center; max-width:660px; background:rgba(4,4,10,0.98); animation:eIn 0.45s cubic-bezier(.23,1,.32,1); }
+        @keyframes eIn { from{opacity:0;transform:scale(0.8) translateY(20px);} to{opacity:1;transform:scale(1) translateY(0);} }
+        .e-quote { font-family:'Rajdhani',sans-serif; font-size:1.55rem; font-weight:700; color:var(--accent); letter-spacing:1px; line-height:1.45; margin-bottom:22px; text-shadow:0 0 30px rgba(var(--accent-rgb),0.5); }
+        .e-auth { font-family:'Share Tech Mono',monospace; font-size:0.72rem; color:var(--muted); letter-spacing:3px; }
+        .e-close { margin-top:36px; cursor:pointer; font-family:'Rajdhani',sans-serif; font-size:0.82rem; letter-spacing:3px; color:var(--muted); transition:color 0.2s; }
+        .e-close:hover { color:var(--accent); }
 
-        .card-btn {
-            display: inline-block;
-            padding: 15px 45px;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            transition: all 0.35s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .card-btn::after {
-            content: ' →';
-            opacity: 0;
-            transform: translateX(-8px);
-            display: inline-block;
-            transition: all 0.3s;
-        }
-        .card-btn:hover::after { opacity: 1; transform: translateX(0); }
+        /* COLOR UI */
+        #color-ui { position:fixed; bottom:22px; left:22px; z-index:500; font-family:'Share Tech Mono',monospace; font-size:0.58rem; letter-spacing:1.5px; color:var(--muted); display:flex; align-items:center; gap:6px; background:var(--card); border:1px solid var(--border); border-radius:3px; padding:5px 10px; cursor:pointer; transition:all 0.3s; }
+        #color-ui:hover { border-color:var(--accent); color:var(--accent); }
+        #cswatch { width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 6px var(--accent); }
 
-        .card-menu  .card-btn { background: var(--secondary); color: #111; box-shadow: 0 8px 25px rgba(135,206,235,0.3); }
-        .card-chan  .card-btn { background: #ffb6c1;           color: #111; box-shadow: 0 8px 25px rgba(255,182,193,0.3); }
-        .card-tube  .card-btn { background: #ff6347;           color: #fff; box-shadow: 0 8px 25px rgba(255,99,71,0.3); }
-
-        .card-menu  .card-btn:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(135,206,235,0.5); }
-        .card-chan  .card-btn:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(255,182,193,0.5); }
-        .card-tube  .card-btn:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(255,99,71,0.5); }
-
-        /* ── FEATURES GRID (small cards) ─────────────────── */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-        }
-        .feat-card {
-            background: var(--card);
-            padding: 38px 30px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            text-align: center;
-            transition: all 0.35s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-        .feat-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--secondary);
-            box-shadow: 0 14px 40px rgba(135,206,235,0.2);
-        }
-        .feat-icon { font-size: 2.5rem; margin-bottom: 16px; display: block; }
-        .feat-card h3 { font-size: 1.2rem; color: var(--accent); margin-bottom: 10px; }
-        .feat-card p  { font-size: 0.95rem; color: var(--muted); }
-
-        /* ── CONTACT ─────────────────────────────────────── */
-        #contact {
-            text-align: center;
-            background: linear-gradient(to bottom, #333333, #222222);
-            padding: 140px 20px;
-            max-width: unset;
-        }
-        #contact h2   { color: var(--accent); }
-        #contact p    { color: var(--light); margin-bottom: 10px; }
-        .discord-btn {
-            display: inline-block;
-            padding: 22px 70px;
-            background: var(--secondary);
-            color: #111;
-            font-size: 1.5rem;
-            font-weight: bold;
-            border-radius: 60px;
-            margin: 40px 0;
-            transition: all 0.4s;
-            box-shadow: 0 12px 40px rgba(135,206,235,0.3);
-            animation: pulse 2s infinite;
-        }
-        .discord-btn:hover {
-            background: var(--accent);
-            color: #fff;
-            transform: scale(1.07);
-            box-shadow: 0 20px 50px rgba(169,169,169,0.4);
-        }
-        @keyframes pulse {
-            0%,100% { transform: scale(1); }
-            50%      { transform: scale(1.04); }
-        }
-
-        /* ── FOOTER ──────────────────────────────────────── */
-        footer {
-            background: #222222;
-            padding: 60px 20px;
-            text-align: center;
-            border-top: 1px solid var(--border);
-            font-size: 0.95rem;
-            color: var(--muted);
-        }
-        .license-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 8px 16px;
-            margin: 12px 0;
-            font-size: 0.85rem;
-            color: var(--secondary);
-            transition: border-color 0.3s;
-        }
-        .license-badge:hover { border-color: var(--secondary); }
-
-        /* ── PARTICLES ───────────────────────────────────── */
-        .stars {
-            position: fixed;
-            top:0; left:0; width:100%; height:100%;
-            pointer-events: none;
-            z-index: 1;
-            overflow: hidden;
-        }
-        .star {
-            position: absolute;
-            background: #ffffff;
-            border-radius: 50%;
-            animation: twinkle 5s infinite, starMove 10s infinite linear;
-            opacity: 0.8;
-        }
-        @keyframes twinkle {
-            0%,100% { opacity: 0.8; }
-            50%      { opacity: 0.2; }
-        }
-        @keyframes starMove {
-            0%   { transform: translateY(0); }
-            100% { transform: translateY(20px); }
-        }
-        .sakura {
-            position: fixed;
-            top:0; left:0; width:100%; height:100%;
-            pointer-events: none;
-            z-index: 1;
-            overflow: hidden;
-        }
-        .petal {
-            position: absolute;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 0C22.4 0 0 22.4 0 50s22.4 50 50 50 50-22.4 50-50S77.6 0 50 0zm0 90c-22.1 0-40-17.9-40-40s17.9-40 40-40 40 17.9 40 40-17.9 40-40 40z" fill="%23a9a9a9"/></svg>') no-repeat center/cover;
-            width: 18px; height: 18px;
-            animation: fall 10s linear infinite;
-            opacity: 0.7;
-        }
-        @keyframes fall {
-            0%   { transform: translateY(-100%) rotate(0deg); }
-            100% { transform: translateY(100vh) rotate(360deg); }
-        }
-
-        /* ── DIVIDER ─────────────────────────────────────── */
-        .divider {
-            width: 100%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--border), transparent);
-            margin: 0;
-        }
-
-        /* ── RESPONSIVE ──────────────────────────────────── */
-        @media (max-width: 900px) {
-            #hero h1         { font-size: 4rem; }
-            .stats-bar       { gap: 30px; }
-            nav ul           { gap: 20px; }
-        }
-        @media (max-width: 600px) {
-            #hero h1         { font-size: 3rem; letter-spacing: 4px; }
-            #hero p.hero-desc{ font-size: 1.1rem; }
-            .projects-grid   { grid-template-columns: 1fr; }
-            .stat-num        { font-size: 2.2rem; }
-        }
+        /* RESPONSIVE */
+        @media(max-width:1024px){.nav-in,.sinr{padding-left:24px;padding-right:24px;}}
+        @media(max-width:768px){.stats-bar{flex-wrap:wrap;} .stat{min-width:50%;border-bottom:1px solid var(--border);} .pgrid{grid-template-columns:1fr;} .hero-cta{flex-direction:column;}}
+        @media(max-width:600px){.hero-sub{letter-spacing:0.2em;} .ebox{padding:40px 28px;} .e-quote{font-size:1.2rem;}}
     </style>
 </head>
 <body>
+<div id="grain"></div>
+<div id="scanlines"></div>
+<div id="grid-bg"></div>
+<div id="ambient"></div>
+<div id="particles"></div>
 
-<div class="stars"  id="stars"></div>
-<div class="sakura" id="sakura"></div>
+<!-- STATUS BAR -->
+<div id="statusbar">
+    <div class="sb"><div class="sbd g"></div><span>ONLINE</span></div>
+    <div class="sb"><div class="sbd w"></div><span>3 MODULES</span></div>
+    <div class="sb"><div class="sbd a"></div><span id="sb-clrlbl">ACCENT AUTO</span></div>
+    <div class="sb" style="margin-left:auto;gap:14px;">
+        <span>CO SUITE</span><span style="opacity:0.3;">·</span>
+        <span>BICODE-DEV</span><span style="opacity:0.3;">·</span>
+        <span>OPEN SOURCE</span>
+    </div>
+    <div id="sb-clock"></div>
+</div>
 
 <!-- NAV -->
 <nav id="nav">
-    <ul>
-        <li><span class="nav-logo">CO ●</span></li>
-        <li><a href="index.html">Hub</a></li>
-        <li><a href="#projets">Projets</a></li>
-        <li><a href="#commun">Fonctionnalités</a></li>
-        <li><a href="#contact">Discord</a></li>
-    </ul>
+    <div class="nav-in">
+        <div class="nav-logo"><div class="nav-pulse"></div>CO HUB</div>
+        <div class="nav-links">
+            <a href="index.html">Hub</a>
+            <a href="#projets">Projets</a>
+            <a href="#commun">Features</a>
+            <a href="#terminal">Terminal</a>
+            <a href="#contact">Discord</a>
+        </div>
+        <div class="nav-badge">v2.0.0</div>
+    </div>
 </nav>
 
 <!-- HERO -->
 <section id="hero">
-    <div class="hero-eyebrow">Bicode-dev • Open Source</div>
-    <h1>CO</h1>
-    <div class="hero-sub">DOWNLOADER SUITE</div>
-    <p class="hero-desc">
-        Tous les outils pour télécharger vos contenus préférés — animes, films, séries et vidéos YouTube — réunis en un seul endroit.
-    </p>
-    <a href="#projets" class="btn-primary" style="
-        display:inline-block; padding:18px 54px;
-        background:var(--accent); color:#fff; font-size:1.3rem; font-weight:700;
-        border-radius:60px; transition:all 0.4s; box-shadow:0 12px 40px rgba(169,169,169,0.3);
-        animation: pulse 2.2s infinite;
-    ">DÉCOUVRIR LES PROJETS</a>
-    <div class="hero-scroll">
-        <span>↓</span>
-        EXPLORER
+    <div class="hero-badge"><div class="hbd"></div>Bicode-dev &nbsp;·&nbsp; Open Source &nbsp;·&nbsp; Gratuit</div>
+    <h1 data-text="CO">CO</h1>
+    <div class="hero-sub">Downloader Suite — All in one</div>
+    <p class="hero-desc">Tous vos outils pour télécharger animes, films, séries et vidéos YouTube — réunis en un seul endroit. Rapide, portable, open-source.</p>
+    <div class="hero-cta">
+        <a href="#projets" class="btn-pri"><span>Découvrir les projets</span><span>→</span></a>
+        <a href="https://github.com/Bicode-dev" target="_blank" class="btn-sec"><span>GitHub</span><span style="opacity:0.5;">↗</span></a>
     </div>
+    <div class="hero-scroll"><div class="hero-scroll-txt">SCROLL</div><div class="hero-scroll-ln"></div></div>
 </section>
 
-<!-- STATS BAR -->
+<!-- STATS -->
 <div class="stats-bar">
-    <div class="stat">
-        <div class="stat-num">3</div>
-        <div class="stat-label">Projets actifs</div>
-    </div>
-    <div class="stat">
-        <div class="stat-num">100%</div>
-        <div class="stat-label">Gratuit & Open Source</div>
-    </div>
-    <div class="stat">
-        <div class="stat-num">0</div>
-        <div class="stat-label">Publicités</div>
-    </div>
-    <div class="stat">
-        <div class="stat-num">∞</div>
-        <div class="stat-label">Téléchargements</div>
+    <div class="stat"><div class="stat-num">3</div><div class="stat-label">Projets actifs</div><div class="stat-underline"></div></div>
+    <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Gratuit &amp; Open Source</div><div class="stat-underline" style="animation-delay:.5s"></div></div>
+    <div class="stat"><div class="stat-num">0</div><div class="stat-label">Publicités</div><div class="stat-underline" style="animation-delay:1s"></div></div>
+    <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Téléchargements</div><div class="stat-underline" style="animation-delay:1.5s"></div></div>
+</div>
+
+<div class="dvd"></div>
+
+<!-- PROJETS -->
+<div class="swrap" id="projets">
+    <div class="sinr">
+        <div class="shdr">
+            <span class="seye">Outils disponibles</span>
+            <h2>Choisissez votre outil</h2>
+            <div class="h2ln"><div class="h2bar"></div><div class="h2dot"></div><div class="h2bar"></div></div>
+        </div>
+        <div class="pgrid">
+            <div class="pcard cm">
+                <div class="cc-tl"></div><div class="cc-tr"></div><div class="cc-bl"></div><div class="cc-br"></div>
+                <span class="c-icon">🎬</span>
+                <div class="c-title">CO-MENU</div>
+                <div class="c-tag">Le lanceur tout-en-un</div>
+                <p class="c-desc">Accédez à tous vos outils CO depuis une seule interface interactive. Co-Flix, Co-Chan et Co-Tube réunis en un menu élégant à navigation par flèches.</p>
+                <div class="c-tags"><span class="ctag">Films</span><span class="ctag">Anime</span><span class="ctag">YouTube</span><span class="ctag">Windows</span><span class="ctag">Android</span></div>
+                <a href="Co-menu.html" class="c-btn">Ouvrir <span class="c-btn-arr">→</span></a>
+            </div>
+            <div class="pcard cc">
+                <div class="cc-tl"></div><div class="cc-tr"></div><div class="cc-bl"></div><div class="cc-br"></div>
+                <span class="c-icon">🌸</span>
+                <div class="c-title">CO-CHAN</div>
+                <div class="c-tag">Téléchargeur Anime</div>
+                <p class="c-desc">Téléchargez vos animes VF & VOSTFR ultra-rapidement. Sibnet, Vidmoly, Sendvid — sélection automatique du meilleur serveur disponible.</p>
+                <div class="c-tags"><span class="ctag">VF</span><span class="ctag">VOSTFR</span><span class="ctag">Multi-serveurs</span><span class="ctag">Reprise auto</span></div>
+                <a href="Co-chan.html" class="c-btn">Ouvrir <span class="c-btn-arr">→</span></a>
+            </div>
+            <div class="pcard ct">
+                <div class="cc-tl"></div><div class="cc-tr"></div><div class="cc-bl"></div><div class="cc-br"></div>
+                <span class="c-icon">▶️</span>
+                <div class="c-title">CO-TUBE</div>
+                <div class="c-tag">Téléchargeur YouTube</div>
+                <p class="c-desc">Téléchargez n'importe quelle vidéo YouTube en MP4 haute qualité ou en MP3. Sous-titres intégrés, cookies natifs Chrome/Firefox.</p>
+                <div class="c-tags"><span class="ctag">MP4 4K</span><span class="ctag">MP3</span><span class="ctag">Sous-titres</span><span class="ctag">yt-dlp</span></div>
+                <a href="Co-tube.html" class="c-btn">Ouvrir <span class="c-btn-arr">→</span></a>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="divider"></div>
+<div class="dvd"></div>
 
-<!-- PROJETS -->
-<section id="projets">
-    <h2>Choisissez votre outil</h2>
-    <div class="projects-grid">
-
-        <!-- CO-MENU -->
-        <div class="project-card card-menu">
-            <span class="card-icon">🎬</span>
-            <div class="card-title">CO-MENU</div>
-            <div class="card-tagline">Le lanceur tout-en-un</div>
-            <p class="card-desc">
-                Accédez à tous vos outils CO depuis une seule interface interactive. Co-Flix, Co-Chan et Co-Tube réunis en un menu élégant à navigation par flèches.
-            </p>
-            <div class="card-tags">
-                <span class="tag">Films & Séries</span>
-                <span class="tag">Anime</span>
-                <span class="tag">YouTube</span>
-                <span class="tag">Windows</span>
-                <span class="tag">Android</span>
-            </div>
-            <a href="Co-menu.html" class="card-btn">
-                OUVRIR CO-MENU
-            </a>
+<!-- FEATURES -->
+<div class="swrap" id="commun">
+    <div class="sinr">
+        <div class="shdr">
+            <span class="seye">Core Features</span>
+            <h2>Ce que tous partagent</h2>
+            <div class="h2ln"><div class="h2bar"></div><div class="h2dot"></div><div class="h2bar"></div></div>
         </div>
-
-        <!-- CO-CHAN -->
-        <div class="project-card card-chan">
-            <span class="card-icon">🌸</span>
-            <div class="card-title">CO-CHAN</div>
-            <div class="card-tagline">Téléchargeur Anime</div>
-            <p class="card-desc">
-                Téléchargez vos animes VF & VOSTFR ultra-rapidement. Sibnet, Vidmoly, Sendvid — sélection automatique du meilleur serveur disponible.
-            </p>
-            <div class="card-tags">
-                <span class="tag">VF</span>
-                <span class="tag">VOSTFR</span>
-                <span class="tag">Multi-serveurs</span>
-                <span class="tag">Reprise auto</span>
-                <span class="tag">Portabl</span>
-            </div>
-            <a href="Co-chan.html" class="card-btn">
-                OUVRIR CO-CHAN
-            </a>
-        </div>
-
-        <!-- CO-TUBE -->
-        <div class="project-card card-tube">
-            <span class="card-icon">▶️</span>
-            <div class="card-title">CO-TUBE</div>
-            <div class="card-tagline">Téléchargeur YouTube</div>
-            <p class="card-desc">
-                Téléchargez n'importe quelle vidéo YouTube en MP4 haute qualité ou en MP3. Sous-titres intégrés, cookies natifs Chrome/Firefox pour contenu restreint.
-            </p>
-            <div class="card-tags">
-                <span class="tag">MP4 4K</span>
-                <span class="tag">MP3</span>
-                <span class="tag">Sous-titres</span>
-                <span class="tag">Cookies natifs</span>
-                <span class="tag">yt-dlp</span>
-            </div>
-            <a href="Co-tube.html" class="card-btn">
-                OUVRIR CO-TUBE
-            </a>
-        </div>
-
-    </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- COMMUN -->
-<section id="commun">
-    <h2>Ce que tous partagent</h2>
-    <div class="features-grid">
-        <div class="feat-card">
-            <span class="feat-icon">🆓</span>
-            <h3>Gratuit à vie</h3>
-            <p>Zéro pub, zéro paywall, zéro abonnement. Pour toujours.</p>
-        </div>
-        <div class="feat-card">
-            <span class="feat-icon">🔓</span>
-            <h3>Open Source</h3>
-            <p>Code visible et vérifiable sur GitHub par n'importe qui.</p>
-        </div>
-        <div class="feat-card">
-            <span class="feat-icon">📦</span>
-            <h3>Portable</h3>
-            <p>Aucune installation requise. Double-clic et c'est parti.</p>
-        </div>
-        <div class="feat-card">
-            <span class="feat-icon">📱</span>
-            <h3>Multi-plateforme</h3>
-            <p>Windows, macOS, Linux et Android (Termux) supportés.</p>
-        </div>
-        <div class="feat-card">
-            <span class="feat-icon">⚡</span>
-            <h3>Ultra-rapide</h3>
-            <p>Téléchargement direct sans intermédiaire ni limitation de vitesse.</p>
-        </div>
-        <div class="feat-card">
-            <span class="feat-icon">🎨</span>
-            <h3>Interface soignée</h3>
-            <p>Menus interactifs à navigation par flèches — expérience homogène.</p>
+        <div class="fgrid">
+            <div class="fcard"><span class="f-icon">🆓</span><h3>Gratuit à vie</h3><p>Zéro pub, zéro paywall, zéro abonnement. Pour toujours, sans exception.</p></div>
+            <div class="fcard"><span class="f-icon">🔓</span><h3>Open Source</h3><p>Code visible et vérifiable sur GitHub par n'importe qui, à tout moment.</p></div>
+            <div class="fcard"><span class="f-icon">📦</span><h3>Portable</h3><p>Aucune installation requise. Double-clic et c'est parti.</p></div>
+            <div class="fcard"><span class="f-icon">📱</span><h3>Multi-plateforme</h3><p>Windows, macOS, Linux et Android (Termux) supportés nativement.</p></div>
+            <div class="fcard"><span class="f-icon">⚡</span><h3>Ultra-rapide</h3><p>Téléchargement direct sans intermédiaire ni limitation de vitesse.</p></div>
+            <div class="fcard"><span class="f-icon">🎛️</span><h3>Interface soignée</h3><p>Navigation par flèches, menus interactifs, expérience homogène partout.</p></div>
         </div>
     </div>
-</section>
+</div>
 
-<div class="divider"></div>
+<div class="dvd"></div>
+
+<!-- TERMINAL -->
+<div class="swrap" id="terminal">
+    <div class="sinr">
+        <div class="shdr">
+            <span class="seye">Démarrage rapide</span>
+            <h2>Prêt en 30 secondes</h2>
+            <div class="h2ln"><div class="h2bar"></div><div class="h2dot"></div><div class="h2bar"></div></div>
+        </div>
+        <div class="terminal">
+            <div class="t-hdr">
+                <div class="td r"></div><div class="td y"></div><div class="td g"></div>
+                <span class="t-ttl">CO-SUITE — QUICKSTART</span>
+            </div>
+            <div class="t-body">
+                <div><span class="t-cmt"># 1. Téléchargez depuis GitHub</span></div>
+                <div><span class="t-prm">$ </span><span class="t-cmd">wget https://github.com/Bicode-dev/Co-Menu/releases/latest/Co-menu.exe</span></div>
+                <br>
+                <div><span class="t-cmt"># 2. Lancez (aucune installation requise)</span></div>
+                <div><span class="t-prm">$ </span><span class="t-cmd">./Co-menu.exe</span></div>
+                <br>
+                <div><span class="t-ok">✓ CO-MENU v2.0  — Chargement...</span></div>
+                <div><span class="t-ok">✓ Co-Chan trouvé &nbsp;&nbsp;[OK]</span></div>
+                <div><span class="t-ok">✓ Co-Tube trouvé &nbsp;&nbsp;[OK]</span></div>
+                <div><span class="t-ok">✓ Co-Flix trouvé &nbsp;&nbsp;[OK]</span></div>
+                <br>
+                <div><span class="t-prm">&gt; </span><span class="t-cmd">Choisissez un outil ↑↓ Entrée</span><span class="t-cur"></span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="dvd"></div>
 
 <!-- CONTACT -->
-<section id="contact" style="padding:140px 20px; text-align:center; max-width:unset; background:linear-gradient(to bottom,#333333,#222222);">
-    <h2 style="color:var(--accent);">Une question ? Rejoignez le Discord</h2>
-    <p style="color:var(--light); margin-bottom:10px;">Support instantané • Mises à jour • Communauté active</p>
-    <a href="https://discord.gg/JH5T8PwFRN" target="_blank" class="discord-btn">REJOINDRE LE DISCORD</a>
-    <p style="margin-top:50px; color:var(--muted);">
-        <small>GitHub → <a href="https://github.com/Bicode-dev" target="_blank" style="color:var(--secondary);">github.com/Bicode-dev</a></small>
-    </p>
-</section>
+<div class="ctsec" id="contact">
+    <div class="ct-in">
+        <span class="seye">Support &amp; Communauté</span>
+        <h2 style="margin-top:8px;">Une question ?</h2>
+        <div class="h2ln" style="max-width:380px;margin:18px auto 0;"><div class="h2bar"></div><div class="h2dot"></div><div class="h2bar"></div></div>
+        <p style="color:var(--light);margin-top:22px;font-size:1rem;font-weight:300;">Support instantané &nbsp;·&nbsp; Mises à jour &nbsp;·&nbsp; Communauté active</p>
+        <a href="https://discord.gg/JH5T8PwFRN" target="_blank" class="disc-btn"><span>Rejoindre le Discord</span><span>↗</span></a>
+        <div class="ct-links">
+            <a href="https://github.com/Bicode-dev" target="_blank" class="ct-lnk">github.com/Bicode-dev</a>
+            <a href="Co-menu.html" class="ct-lnk">Co-Menu</a>
+            <a href="Co-chan.html" class="ct-lnk">Co-Chan</a>
+            <a href="Co-tube.html" class="ct-lnk">Co-Tube</a>
+        </div>
+    </div>
+</div>
 
 <!-- FOOTER -->
 <footer>
-    <p>© 2026 CO Suite • les jeux mathis</p>
-
-    <div style="margin:20px 0;">
-        <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" class="license-badge">
+    <div class="f-logo">CO</div>
+    <div class="f-tag">// DOWNLOADER SUITE BY BICODE-DEV //</div>
+    <p>© 2026 CO Suite &nbsp;·&nbsp; les jeux mathis</p>
+    <div style="margin:22px 0;">
+        <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" class="lic-badge">
             🔒 CC BY-NC-ND 4.0 — Usage personnel uniquement • Pas de modification • Pas d'usage commercial
         </a>
     </div>
-
-    <p style="font-size:0.8rem; color:var(--muted); max-width:700px; margin:0 auto 30px;">
-        Ces logiciels sont protégés par la licence
-        <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" style="color:var(--secondary);">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International</a>.
-        Toute utilisation commerciale, modification ou redistribution est strictement interdite sans autorisation écrite de les jeux mathis.
+    <p style="font-size:0.8rem;max-width:680px;margin:0 auto 28px;color:var(--muted);">
+        Ces logiciels sont protégés par la licence <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" style="color:var(--accent);">CC BY-NC-ND 4.0</a>.
+        Toute utilisation commerciale, modification ou redistribution est strictement interdite.
     </p>
-
-    <div style="margin-top:20px; text-align:left; max-width:800px; margin-left:auto; margin-right:auto;">
-        <h3 style="color:var(--accent); margin-bottom:12px;">DMCA</h3>
-        <p>Si vous estimez qu'un contenu accessible via nos logiciels porte atteinte à vos droits, nous vous invitons à contacter directement la plateforme hébergeant ce contenu avec une demande sérieuse de suppression.</p>
-        <p style="margin-top:10px; color:var(--muted); font-size:0.85rem;">Toute demande de suppression doit être adressée aux services d'hébergement concernés. Merci de votre compréhension.</p>
+    <div class="f-dmca">
+        <h3>DMCA</h3>
+        <p>Si vous estimez qu'un contenu porte atteinte à vos droits, contactez directement la plateforme hébergeant ce contenu.</p>
+        <ul>
+            <li>Signature physique ou électronique d'une personne autorisée.</li>
+            <li>Identification précise de l'œuvre protégée.</li>
+            <li>Description du contenu supposé contrefaisant et son emplacement.</li>
+            <li>Déclaration attestant de votre bonne foi.</li>
+        </ul>
+        <p style="margin-top:10px;font-size:0.82rem;">Toute demande doit être adressée aux services d'hébergement concernés.</p>
     </div>
 </footer>
 
+<!-- EASTER EGG DOT -->
+<div id="etrig" title="..."></div>
+<div id="emod">
+    <div class="ebox">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:3px;margin-bottom:28px;">// MESSAGE CACHÉ //</div>
+        <div class="e-quote">« les droits humains compteront toujours plus que les droits d'auteur. »</div>
+        <div class="e-auth">— BICODE-DEV, 2026</div>
+        <div style="margin:32px 0;height:1px;background:var(--border);"></div>
+        <p style="font-family:'Barlow',sans-serif;font-size:0.88rem;color:var(--light);font-weight:300;line-height:1.8;">Ce projet est open-source parce que l'accès au savoir, à la culture et à l'information est un droit fondamental pour tous.</p>
+        <div class="e-close" onclick="closeE()">[ FERMER ]</div>
+    </div>
+</div>
+
+<!-- COLOR INDICATOR -->
+<div id="color-ui" onclick="nextColor()" title="Changer la couleur (cliquez)">
+    <div id="cswatch"></div>
+    <span id="clrlbl">ACCENT</span>
+</div>
+
 <script>
-    // ── Étoiles ────────────────────────────────────────────
-    const stars = document.getElementById('stars');
-    for (let i = 0; i < 120; i++) {
-        const s = document.createElement('div');
-        s.classList.add('star');
-        const sz = Math.random() * 2.2 + 0.8;
-        s.style.cssText = `
-            width:${sz}px; height:${sz}px;
-            left:${Math.random()*100}%; top:${Math.random()*100}%;
-            animation-duration:${Math.random()*3+2}s,${Math.random()*8+6}s;
-            animation-delay:${Math.random()*6}s,${Math.random()*4}s;
-        `;
-        stars.appendChild(s);
+// ══ CONSOLE EASTER EGG ══════════════════════════════════════
+console.log(
+    '%c\n ██████╗  ██████╗     ██╗  ██╗██╗   ██╗██████╗ \n ██╔════╝██╔═══██╗   ██║  ██║██║   ██║██╔══██╗\n ██║     ██║   ██║   ███████║██║   ██║██████╔╝\n ██║     ██║   ██║   ██╔══██║██║   ██║██╔══██╗\n ╚██████╗╚██████╔╝   ██║  ██║╚██████╔╝██████╔╝\n  ╚═════╝ ╚═════╝    ╚═╝  ╚═╝ ╚═════╝ ╚═════╝\n\n « les droits humains compteront toujours\n   plus que les droits d\'auteur. »\n                     — Bicode-dev, 2026\n',
+    'color:#00cfff;font-family:monospace;font-size:10px;'
+);
+
+// ══ COLOR SYSTEM ════════════════════════════════════════════
+const PALETTES = [
+    {name:'Cyan',    ac:'#00cfff',ar:'0,207,255',    a2:'#7c3fff',a2r:'124,63,255'},
+    {name:'Electric',ac:'#00f0b5',ar:'0,240,181',    a2:'#0095ff',a2r:'0,149,255'},
+    {name:'Plasma',  ac:'#bf5fff',ar:'191,95,255',   a2:'#ff3fa4',a2r:'255,63,164'},
+    {name:'Solar',   ac:'#ffb700',ar:'255,183,0',    a2:'#ff5c38',a2r:'255,92,56'},
+    {name:'Neon',    ac:'#39ff14',ar:'57,255,20',    a2:'#00cfff',a2r:'0,207,255'},
+    {name:'Rose',    ac:'#ff3fa4',ar:'255,63,164',   a2:'#bf5fff',a2r:'191,95,255'},
+    {name:'Ice',     ac:'#4fc3f7',ar:'79,195,247',   a2:'#00cfff',a2r:'0,207,255'},
+    {name:'Volt',    ac:'#d4ff00',ar:'212,255,0',    a2:'#00cfff',a2r:'0,207,255'},
+];
+let pidx = 0;
+
+function applyPalette(p, src){
+    const r = document.documentElement;
+    r.style.setProperty('--accent',     p.ac);
+    r.style.setProperty('--accent-rgb', p.ar);
+    r.style.setProperty('--accent-glow',`rgba(${p.ar},0.14)`);
+    r.style.setProperty('--accent2',    p.a2);
+    r.style.setProperty('--accent2-rgb',p.a2r);
+    // grid
+    document.getElementById('grid-bg').style.backgroundImage=
+        `linear-gradient(rgba(${p.ar},0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(${p.ar},0.022) 1px,transparent 1px)`;
+    document.getElementById('cswatch').style.cssText=`background:${p.ac};box-shadow:0 0 6px ${p.ac};`;
+    document.getElementById('clrlbl').textContent=(src||'')+p.name.toUpperCase();
+    document.getElementById('sb-clrlbl').textContent='ACCENT: '+p.name.toUpperCase()+(src?' ('+src+')':'');
+}
+
+function getSystemColor(){
+    try{
+        const d=document.createElement('div');
+        d.style.color='AccentColor'; document.body.appendChild(d);
+        const c=getComputedStyle(d).color; document.body.removeChild(d);
+        const m=c.match(/\d+/g);
+        if(m&&m.length>=3){
+            const r=+m[0],g=+m[1],b=+m[2];
+            if(r+g+b>30&&r+g+b<720){
+                return{ac:`#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`,ar:`${r},${g},${b}`,a2:'#7c3fff',a2r:'124,63,255',name:'Système'};
+            }
+        }
+    }catch(e){}
+    return null;
+}
+
+function nextColor(){
+    pidx=(pidx+1)%PALETTES.length;
+    applyPalette(PALETTES[pidx]);
+    document.body.style.filter='brightness(1.12)';
+    setTimeout(()=>{document.body.style.filter='';},320);
+}
+
+// Init
+(function(){
+    const sys=getSystemColor();
+    if(sys){ applyPalette(sys,'SYS'); }
+    else{
+        pidx=Math.floor(Math.random()*PALETTES.length);
+        applyPalette(PALETTES[pidx],'RNG');
     }
+})();
 
-    // ── Pétales ────────────────────────────────────────────
-    const sakura = document.getElementById('sakura');
-    for (let i = 0; i < 45; i++) {
-        const p = document.createElement('div');
-        p.classList.add('petal');
-        p.style.cssText = `
-            left:${Math.random()*100}%;
-            animation-duration:${Math.random()*5+7}s;
-            animation-delay:${Math.random()*8}s;
-            transform:scale(${Math.random()*0.5+0.5});
-        `;
-        sakura.appendChild(p);
+// ══ PARTICLES ═══════════════════════════════════════════════
+(function(){
+    const c=document.getElementById('particles');
+    for(let i=0;i<80;i++){
+        const p=document.createElement('div'); p.className='particle';
+        const sz=Math.random()*2.5+0.4;
+        const isA2=Math.random()>.68;
+        p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;bottom:${-Math.random()*10}%;background:${isA2?'var(--accent2)':'var(--accent)'};box-shadow:0 0 ${sz*3}px ${isA2?'var(--accent2)':'var(--accent)'};animation-duration:${Math.random()*20+12}s;animation-delay:${Math.random()*15}s;`;
+        c.appendChild(p);
     }
+})();
 
-    // ── Smooth scroll ──────────────────────────────────────
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-        a.addEventListener('click', e => {
-            e.preventDefault();
-            const target = document.querySelector(a.getAttribute('href'));
-            if (target) target.scrollIntoView({ behavior: 'smooth' });
-        });
-    });
+// ══ CLOCK ════════════════════════════════════════════════════
+function tick(){const n=new Date(),h=n.getHours().toString().padStart(2,'0'),m=n.getMinutes().toString().padStart(2,'0'),s=n.getSeconds().toString().padStart(2,'0');document.getElementById('sb-clock').textContent=`${h}:${m}:${s}`;}
+setInterval(tick,1000); tick();
 
-    // ── Nav opacity on scroll ──────────────────────────────
-    window.addEventListener('scroll', () => {
-        document.getElementById('nav').style.background =
-            window.scrollY > 50 ? 'rgba(51,51,51,0.99)' : 'rgba(51,51,51,0.95)';
+// ══ EASTER EGG ══════════════════════════════════════════════
+document.getElementById('etrig').addEventListener('click',()=>document.getElementById('emod').classList.add('on'));
+function closeE(){document.getElementById('emod').classList.remove('on');}
+document.getElementById('emod').addEventListener('click',e=>{if(e.target===e.currentTarget)closeE();});
+// Konami code
+let ks=[];const KC=[38,38,40,40,37,39,37,39,66,65];
+document.addEventListener('keydown',e=>{ks.push(e.keyCode);if(ks.length>10)ks.shift();if(JSON.stringify(ks)===JSON.stringify(KC))document.getElementById('emod').classList.add('on');});
+
+// ══ SMOOTH SCROLL ═══════════════════════════════════════════
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth'});});});
+
+// ══ NAV ON SCROLL ═══════════════════════════════════════════
+window.addEventListener('scroll',()=>{const nav=document.getElementById('nav');const s=window.scrollY>60;nav.style.background=s?'rgba(4,4,10,0.98)':'rgba(4,4,10,0.88)';nav.style.boxShadow=s?'0 8px 40px rgba(0,0,0,0.5)':'none';},{passive:true});
+
+// ══ PARALLAX ════════════════════════════════════════════════
+window.addEventListener('scroll',()=>{const y=window.scrollY;document.getElementById('grid-bg').style.transform=`translateY(${y*.018}px)`;document.getElementById('ambient').style.transform=`translateY(${y*.028}px)`;},{passive:true});
+
+// ══ CARD 3D TILT ════════════════════════════════════════════
+document.querySelectorAll('.pcard').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+        const rect=card.getBoundingClientRect();
+        const x=(e.clientX-rect.left)/rect.width-.5;
+        const y=(e.clientY-rect.top)/rect.height-.5;
+        card.style.transform=`translateY(-10px) rotateY(${x*7}deg) rotateX(${-y*5}deg)`;
+        card.style.transition='transform 0.1s ease';
     });
+    card.addEventListener('mouseleave',()=>{
+        card.style.transition='all 0.6s cubic-bezier(.23,1,.32,1)';
+        card.style.transform='';
+        setTimeout(()=>{card.style.transition='';},600);
+    });
+});
 </script>
 </body>
 </html>
