@@ -551,7 +551,584 @@
         petal.style.left = Math.random() * 100 + '%';
         petal.style.animationDuration = Math.random() * 5 + 5 + 's';
         petal.style.animationDelay = Math.random() * 5 + 's';
+        petal.style.transform = `s<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Co-Tube — Téléchargeur YouTube ultra-rapide. MP4 haute qualité, MP3, sous-titres intégrés, cookies natifs Chrome/Firefox.">
+    <title>Co-Tube • Téléchargeur YouTube</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(to bottom, #333333, #111111);
+        color: #e0e0e0;
+        line-height:1.6;
+        min-height:100vh;
+        position:relative;
+        overflow-x:hidden;
+    }
+
+    a { color:inherit; text-decoration:none; }
+    ul { list-style:none; }
+
+    :root {
+        --bg: #222222;
+        --card: #333333;
+        --border: #444444;
+        --text: #e0e0e0;
+        --muted: #888888;
+        --light: #aaaaaa;
+        --accent: #a9a9a9;
+        --secondary: #87ceeb;
+    }
+
+    nav {
+        position:fixed;
+        top:0; left:0; right:0;
+        background:rgba(51,51,51,0.95);
+        backdrop-filter:blur(12px);
+        z-index:1000;
+        padding:18px 0;
+        border-bottom:1px solid var(--border);
+        transition:all 0.3s;
+        animation: navSlide 1s ease-out;
+    }
+    @keyframes navSlide {
+        from { transform: translateY(-100%); }
+        to { transform: translateY(0); }
+    }
+    nav ul {
+        display:flex;
+        justify-content:center;
+        gap:40px;
+        flex-wrap:wrap;
+    }
+    nav a {
+        font-weight:600;
+        font-size:1.05rem;
+        padding:8px 0;
+        position:relative;
+        transition:color 0.3s, transform 0.3s;
+        color: var(--accent);
+    }
+    nav a:hover {
+        color:var(--secondary);
+        transform: scale(1.1);
+    }
+    nav a::after {
+        content:'';
+        position:absolute;
+        width:0; height:2px;
+        bottom:0; left:50%;
+        background:var(--secondary);
+        transition:width 0.3s, left 0.3s;
+    }
+    nav a:hover::after { width:100%; left:0; }
+
+    #hero {
+        min-height:100vh;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        text-align:center;
+        padding:0 20px;
+        background:linear-gradient(to bottom, #333333 0%, #222222 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    #hero h1 {
+        font-size:5.5rem;
+        font-weight:900;
+        letter-spacing:4px;
+        margin-bottom:16px;
+        background:linear-gradient(90deg, var(--accent), var(--secondary));
+        -webkit-background-clip:text;
+        -webkit-text-fill-color:transparent;
+        user-select:none;
+        animation: glow 2s ease-in-out infinite alternate, bounce 2s infinite;
+    }
+    @keyframes glow {
+        from { text-shadow: 0 0 10px var(--accent); }
+        to { text-shadow: 0 0 20px var(--secondary); }
+    }
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    #hero p {
+        font-size:1.5rem;
+        max-width:900px;
+        margin-bottom:50px;
+        color:var(--light);
+        animation: fadeInText 2s ease-in;
+    }
+    @keyframes fadeInText {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    .btn-primary {
+        display:inline-block;
+        padding:20px 60px;
+        background:var(--accent);
+        color:#ffffff;
+        font-size:1.4rem;
+        font-weight:bold;
+        border-radius:60px;
+        transition:all 0.4s ease;
+        box-shadow:0 12px 40px rgba(169,169,169,0.3);
+        animation: pulse 2s infinite;
+    }
+    .btn-primary:hover {
+        background:var(--secondary);
+        transform:translateY(-6px);
+        box-shadow:0 20px 50px rgba(135,206,235,0.4);
+    }
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    section {
+        padding:120px 20px;
+        max-width:1300px;
+        margin:0 auto;
+        position: relative;
+        z-index: 10;
+        animation: sectionFade 1.5s ease-in;
+    }
+    @keyframes sectionFade {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    h2 {
+        font-size:3.2rem;
+        text-align:center;
+        margin-bottom:70px;
+        position:relative;
+        color: var(--accent);
+        animation: fadeIn 1s ease-in, textWave 3s infinite;
+    }
+    h2::after {
+        content:'';
+        width:120px;
+        height:4px;
+        background:var(--secondary);
+        display:block;
+        margin:20px auto 0;
+        border-radius:2px;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes textWave {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+        100% { transform: translateY(0); }
+    }
+
+    .grid {
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
+        gap:35px;
+    }
+    .card {
+        background:var(--card);
+        padding:45px 35px;
+        border-radius:16px;
+        border:1px solid var(--border);
+        transition:all 0.35s ease;
+        text-align:center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        animation: cardAnim 1.5s ease-in-out infinite alternate;
+    }
+    .card:hover {
+        transform:translateY(-12px);
+        border-color:var(--secondary);
+        box-shadow:0 15px 40px rgba(135,206,235,0.3);
+    }
+    .card h3 {
+        font-size:1.7rem;
+        margin:20px 0 15px;
+        color:var(--accent);
+        animation: colorShift 3s infinite alternate;
+    }
+    @keyframes cardAnim {
+        from { box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        to { box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+    }
+    @keyframes colorShift {
+        from { color: var(--accent); }
+        to { color: var(--secondary); }
+    }
+
+    .steps { counter-reset:step; }
+    .step {
+        display:flex;
+        align-items:center;
+        gap:50px;
+        margin-bottom:80px;
+        background:var(--card);
+        padding:50px;
+        border-radius:16px;
+        border-left:6px solid var(--accent);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        animation: slideIn 1s ease-out, stepPulse 2s infinite;
+    }
+    .step:nth-child(even) { flex-direction:row-reverse; }
+    .step::before {
+        counter-increment:step;
+        content:"0" counter(step);
+        font-size:5rem;
+        font-weight:900;
+        color:var(--border);
+        opacity:0.8;
+    }
+    .step-content { flex:1; }
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(-50px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes stepPulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+        100% { transform: scale(1); }
+    }
+
+    .faq-item { margin-bottom:20px; animation: fadeIn 1s ease-in, faqBounce 2s infinite; }
+    .faq-question {
+        background:var(--card);
+        padding:22px;
+        cursor:pointer;
+        border-radius:12px;
+        font-weight:600;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        transition:background 0.3s, transform 0.3s;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .faq-question:hover { background:#444444; transform: scale(1.02); }
+    .faq-question span { font-size:1.4rem; transition:transform 0.3s; color: var(--accent); animation: arrowWiggle 1s infinite; }
+    .faq-question.active span { transform:rotate(180deg); }
+    .faq-answer {
+        display:none;
+        padding:25px;
+        background:#444444;
+        border-radius:0 0 12px 12px;
+        border-top:1px solid var(--border);
+        color: var(--text);
+        animation: answerExpand 0.5s ease-in;
+    }
+    @keyframes faqBounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-3px); }
+    }
+    @keyframes arrowWiggle {
+        0%, 100% { transform: rotate(0deg); }
+        50% { transform: rotate(10deg); }
+    }
+    @keyframes answerExpand {
+        from { max-height: 0; opacity: 0; }
+        to { max-height: 500px; opacity: 1; }
+    }
+
+    #contact {
+        text-align:center;
+        background:linear-gradient(to bottom, #333333, #222222);
+        padding:140px 20px;
+    }
+    .discord-btn {
+        display:inline-block;
+        padding:22px 70px;
+        background:var(--secondary);
+        color:#ffffff;
+        font-size:1.6rem;
+        font-weight:bold;
+        border-radius:60px;
+        margin:40px 0;
+        transition:all 0.4s;
+        box-shadow:0 12px 40px rgba(135,206,235,0.3);
+        animation: pulse 2s infinite, discordShake 3s infinite;
+    }
+    .discord-btn:hover {
+        background:var(--accent);
+        transform:scale(1.07);
+        box-shadow:0 20px 50px rgba(169,169,169,0.4);
+    }
+    @keyframes discordShake {
+        0%, 100% { transform: rotate(0deg); }
+        25% { transform: rotate(5deg); }
+        75% { transform: rotate(-5deg); }
+    }
+
+    footer {
+        background:#222222;
+        padding:60px 20px;
+        text-align:center;
+        border-top:1px solid var(--border);
+        font-size:0.95rem;
+        color:var(--muted);
+        animation: footerFade 2s ease-in;
+    }
+    @keyframes footerFade {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .license-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 16px;
+        margin: 12px 0;
+        font-size: 0.85rem;
+        color: var(--secondary);
+        transition: border-color 0.3s;
+    }
+    .license-badge:hover { border-color: var(--secondary); }
+
+    .stars {
+        position:fixed;
+        top:0; left:0; width:100%; height:100%;
+        pointer-events:none;
+        z-index:1;
+        overflow: hidden;
+    }
+    .star {
+        position:absolute;
+        background: #ffffff;
+        border-radius:50%;
+        animation: twinkle 5s infinite, starMove 10s infinite linear;
+        opacity: 0.8;
+    }
+    @keyframes twinkle {
+        0%, 100% { opacity: 0.8; }
+        50% { opacity: 0.2; }
+    }
+    @keyframes starMove {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(20px); }
+    }
+
+    .sakura {
+        position:fixed;
+        top:0; left:0; width:100%; height:100%;
+        pointer-events:none;
+        z-index:1;
+        overflow: hidden;
+    }
+    .petal {
+        position:absolute;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 0C22.4 0 0 22.4 0 50s22.4 50 50 50 50-22.4 50-50S77.6 0 50 0zm0 90c-22.1 0-40-17.9-40-40s17.9-40 40-40 40 17.9 40 40-17.9 40-40 40z" fill="%23a9a9a9"/></svg>') no-repeat center/cover;
+        width: 20px;
+        height: 20px;
+        animation: fall 10s linear infinite;
+        opacity: 0.8;
+    }
+    @keyframes fall {
+        0% { transform: translateY(-100%) rotate(0deg); }
+        100% { transform: translateY(100vh) rotate(360deg); }
+    }
+
+    @media (max-width: 900px) {
+        #hero h1 { font-size:4rem; }
+        .step, .step:nth-child(even) { flex-direction:column; text-align:center; }
+        .step::before { margin-bottom:20px; }
+        nav ul { gap:20px; }
+    }
+    @media (max-width: 600px) {
+        #hero h1 { font-size:3.2rem; }
+        #hero p { font-size:1.2rem; }
+        .btn-primary { padding:16px 40px; font-size:1.2rem; }
+    }
+</style></head>
+<body>
+
+<div class="stars" id="stars"></div>
+<div class="sakura" id="sakura"></div>
+
+<nav id="nav">
+    <ul>
+        <li><a href="index.html">Hub</a></li>
+        <li><a href="#features">Fonctionnalités</a></li>
+        <li><a href="#how">Utilisation</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="Co-menu.html">Co-Menu</a></li>
+        <li><a href="Co-chan.html">Co-Chan</a></li>
+        <li><a href="#contact">Discord</a></li>
+    </ul>
+</nav>
+
+<section id="hero">
+    <h1>CO-TUBE</h1>
+    <p>Téléchargeur YouTube ultra-rapide • MP4 haute qualité & MP3 • Sous-titres intégrés</p>
+    <a href="https://github.com/Bicode-dev/Co-tube/releases/download/Co-tube/Co-tube.exe" class="btn-primary">
+        TÉLÉCHARGER CO-TUBE.EXE
+    </a>
+</section>
+
+<section id="features">
+    <h2>Fonctionnalités</h2>
+    <div class="grid">
+        <div class="card"><h3>MP4 haute qualité</h3><p>Téléchargement en meilleure qualité disponible • Fusion vidéo + audio automatique via ffmpeg</p></div>
+        <div class="card"><h3>MP3 audio</h3><p>Extraction audio en MP3 192 kbps directement depuis n'importe quelle vidéo YouTube</p></div>
+        <div class="card"><h3>Sous-titres intégrés</h3><p>Sous-titres manuels dans toutes les langues disponibles • Intégrés dans le MP4 et sélectionnables dans VLC</p></div>
+        <div class="card"><h3>Cookies natifs</h3><p>Lecture directe de la base SQLite de Chrome, Edge, Brave, Firefox • Le navigateur peut rester ouvert</p></div>
+        <div class="card"><h3>Portable</h3><p>Aucune installation requise • ffmpeg et yt-dlp téléchargés automatiquement si absents</p></div>
+        <div class="card"><h3>Code transparent</h3><p>Code source visible sur GitHub • Vérifiable par tous</p></div>
+        <div class="card"><h3>Gratuit à vie</h3><p>Zéro pub • Zéro paywall</p></div>
+    </div>
+</section>
+
+<section id="how">
+    <h2>Utilisation en 4 étapes</h2>
+    <div class="steps">
+        <div class="step">
+            <div class="step-content">
+                <h3>1. Téléchargez</h3>
+                <p>Cliquez sur le bouton principal pour récupérer <strong>Co-tube.exe</strong> depuis GitHub</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-content">
+                <h3>2. Lancez</h3>
+                <p>Double-cliquez sur <strong>Co-tube.exe</strong> — ffmpeg et yt-dlp sont installés automatiquement si besoin</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-content">
+                <h3>3. Collez le lien</h3>
+                <p>Copiez l'URL YouTube et collez-la dans Co-Tube • Exemples : <code>youtube.com/watch?v=...</code></p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-content">
+                <h3>4. Profitez</h3>
+                <p>Choisissez MP4 ou MP3 • Le fichier arrive directement dans votre dossier de téléchargement</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="faq">
+    <h2>Questions fréquentes</h2>
+    <div class="faq-item">
+        <div class="faq-question">Est-ce légal ?<span>▼</span></div>
+        <div class="faq-answer">Co-Tube télécharge uniquement des contenus accessibles publiquement ou via votre compte. L'usage reste sous votre responsabilité conformément aux conditions d'utilisation de YouTube.</div>
+    </div>
+    <div class="faq-item">
+        <div class="faq-question">Windows Defender bloque le fichier ?<span>▼</span></div>
+        <div class="faq-answer">Co-Tube ne devrait jamais déclencher Windows Defender. Cependant, si une alerte apparaît sur votre machine, <strong>ne lancez pas le fichier</strong> et signalez-le nous immédiatement sur le Discord — nous investiguerons au plus vite.</div>
+    </div>
+    <div class="faq-item">
+        <div class="faq-question">Pourquoi configurer les cookies ?<span>▼</span></div>
+        <div class="faq-answer">Les cookies permettent d'accéder aux vidéos avec restriction d'âge, aux contenus membres et d'éviter l'erreur "Sign in to confirm you're not a bot". Co-Tube lit la base SQLite de Chrome directement — le navigateur peut rester ouvert.</div>
+    </div>
+    <div class="faq-item">
+        <div class="faq-question">Quels navigateurs sont supportés pour les cookies ?<span>▼</span></div>
+        <div class="faq-answer">Co-Tube supporte Google Chrome, Microsoft Edge, Brave, Opera, Chromium, Vivaldi et Mozilla Firefox. Il lit la base de données SQLite directement sans avoir besoin de fermer le navigateur (Chrome, Edge, Brave).</div>
+    </div>
+    <div class="faq-item">
+        <div class="faq-question">Version Android disponible ?<span>▼</span></div>
+        <div class="faq-answer">Oui ! Co-Tube fonctionne dans Termux sur Android. Script d'installation disponible dans le dépôt GitHub.</div>
+    </div>
+</section>
+
+<section id="contact">
+    <h2>Une question ? Rejoignez le Discord</h2>
+    <p>Support instantané • Mises à jour • Communauté active</p>
+    <a href="https://discord.com/invite/tv2EZEYbax" target="_blank" class="discord-btn">REJOINDRE LE DISCORD</a>
+    <p style="margin-top:50px; color:var(--muted);">
+        <small>GitHub → <a href="https://github.com/Bicode-dev/Co-tube" target="_blank">github.com/Bicode-dev/Co-tube</a></small>
+    </p>
+</section>
+
+<footer>
+    <p id="copyright">© 2026 Co-Tube • les jeux mathis</p>
+
+    <div style="margin: 20px 0;">
+        <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" class="license-badge">
+            🔒 CC BY-NC-ND 4.0 — Usage personnel uniquement • Pas de modification • Pas d'usage commercial
+        </a>
+    </div>
+
+    <p style="font-size:0.8rem; color:var(--muted); max-width:700px; margin:0 auto 30px;">
+        Ce logiciel est protégé par la licence
+        <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" style="color:var(--secondary);">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International</a>.
+        Toute utilisation commerciale, modification ou redistribution est strictement interdite sans autorisation écrite de les jeux mathis.
+    </p>
+
+    <div id="dmca" style="margin-top: 20px; text-align: left; max-width: 800px; margin-left: auto; margin-right: auto;">
+        <h3 style="color:var(--accent); margin-bottom:12px;">DMCA</h3>
+        <p>Si vous estimez qu'un contenu accessible via notre logiciel porte atteinte à vos droits, nous vous invitons à contacter directement la plateforme qui l'héberge avec une demande sérieuse de suppression accompagnée des informations suivantes :</p>
+        <ul style="margin: 12px 0 12px 20px; list-style: disc; color:var(--muted);">
+            <li>Une signature physique ou électronique d'une personne autorisée à agir au nom du titulaire du droit d'auteur concerné.</li>
+            <li>Une identification précise de l'œuvre protégée.</li>
+            <li>Une description claire du contenu supposé contrefaisant ainsi que son emplacement exact.</li>
+            <li>Une déclaration attestant de votre bonne foi quant à l'illégalité de l'utilisation du contenu.</li>
+            <li>Une déclaration sous peine de parjure attestant de l'exactitude des informations fournies et de votre autorité à agir pour le compte du titulaire des droits.</li>
+        </ul>
+        <p>Toute demande de suppression doit être adressée aux services d'hébergement concernés. Merci de votre compréhension.</p>
+    </div>
+</footer>
+
+<script>
+    const stars = document.getElementById('stars');
+    for(let i = 0; i < 100; i++) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        const size = Math.random() * 2 + 1;
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.animationDuration = Math.random() * 3 + 2 + 's';
+        star.style.animationDelay = Math.random() * 5 + 's';
+        stars.appendChild(star);
+    }
+
+    const sakura = document.getElementById('sakura');
+    for(let i = 0; i < 50; i++) {
+        const petal = document.createElement('div');
+        petal.classList.add('petal');
+        petal.style.left = Math.random() * 100 + '%';
+        petal.style.animationDuration = Math.random() * 5 + 5 + 's';
+        petal.style.animationDelay = Math.random() * 5 + 's';
         petal.style.transform = `scale(${Math.random() * 0.5 + 0.5})`;
+        sakura.appendChild(petal);
+    }
+
+    document.querySelectorAll('.faq-question').forEach(q => {
+        q.addEventListener('click', () => {
+            q.classList.toggle('active');
+            const answer = q.nextElementSibling;
+            answer.style.display = answer.style.display === 'block' ? 'none' : 'block';
+        });
+    });
+
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', e => {
+            e.preventDefault();
+            document.querySelector(a.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+
+    window.addEventListener('scroll', () => {
+        document.getElementById('nav').style.background = 
+            window.scrollY > 50 ? 'rgba(51,51,51,0.99)' : 'rgba(51,51,51,0.95)';
+    });
+</script></body>
+</html>ale(${Math.random() * 0.5 + 0.5})`;
         sakura.appendChild(petal);
     }
 
