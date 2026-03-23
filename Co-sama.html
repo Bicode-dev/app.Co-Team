@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<!-- 
+  ██████╗ ██████╗       ███████╗ █████╗ ███╗   ███╗ █████╗ 
+  ██╔════╝██╔═══██╗     ██╔════╝██╔══██╗████╗ ████║██╔══██╗
+  ██║     ██║   ██║     ███████╗███████║██╔████╔██║███████║
+  ██║     ██║   ██║     ╚════██║██╔══██║██║╚██╔╝██║██╔══██║
+  ╚██████╗╚██████╔╝     ███████║██║  ██║██║ ╚═╝ ██║██║  ██║
+   ╚═════╝ ╚═════╝      ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝
+
+  « les droits humains compteront toujours plus que les droits d'auteur. »
+  — Bicode-dev, 2026
+-->
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Co-Sama — Téléchargeur de scans manga ultra-rapide. Téléchargez vos chapitres préférés en quelques secondes.">
+    <title>Co-Sama • Téléchargeur Scans &amp; Manga</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --bg:#04040a; --surface:#070710; --card:#0d0d1e;
+            --border:#222238; --border-hi:#343460;
+            --text:#eeeef8; --muted:#7070a0; --light:#b8b8d8;
+            --accent:#00e5a0; --accent-rgb:0,229,160; --accent-glow:rgba(0,229,160,0.13);
+            --accent2:#00b8d9; --accent2-rgb:0,184,217;
+            --green:#00ff88; --warn:#ffb700;
+        }
+        html { scroll-behavior:smooth; }
+        body { font-family:'Barlow',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; min-height:100vh; overflow-x:hidden; transition:filter 0.3s; }
+        a { color:inherit; text-decoration:none; }
+        ul { list-style:none; }
+
+        /* GRAIN */
+        #grain { position:fixed; inset:0; z-index:9999; pointer-events:none; opacity:0.04;
+            background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-size:180px; animation:grainShift 0.12s steps(1) infinite; }
+        @keyframes grainShift { 0%{transform:translate(0,0);} 25%{transform:translate(-3px,2px);} 50%{transform:translate(3px,-2px);} 75%{transform:translate(-1px,3px);} }
+
+        /* SCANLINES */
+        #scanlines { position:fixed; inset:0; z-index:9998; pointer-events:none;
+            background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.07) 2px,rgba(0,0,0,0.07) 4px); }
+
+        /* GRID */
+        #grid-bg { position:fixed; inset:0; z-index:0; pointer-events:none;
+            background-image:linear-gradient(rgba(var(--accent-rgb),0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--accent-rgb),0.02) 1px,transparent 1px);
+            background-size:64px 64px; }
+
+        /* AMBIENT */
+        #ambient { position:fixed; inset:0; z-index:0; pointer-events:none;
+            background:radial-gradient(ellipse 60% 50% at 10% 30%,rgba(var(--accent-rgb),0.05) 0%,transparent 65%),
+                       radial-gradient(ellipse 50% 60% at 90% 70%,rgba(var(--accent2-rgb),0.04) 0%,transparent 65%);
+            animation:ambPulse 8s ease-in-out infinite alternate; }
+        @keyframes ambPulse { from{opacity:0.5;} to{opacity:1;} }
+
+        /* PARTICLES */
+        #particles { position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden; }
+        .particle { position:absolute; border-radius:50%; opacity:0; animation:rise linear infinite; }
+        @keyframes rise { 0%{opacity:0;transform:translateY(0) scale(1);} 10%{opacity:0.8;} 90%{opacity:0.2;} 100%{opacity:0;transform:translateY(-110vh) scale(0.2);} }
+
+        @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+
+        /* NAV */
+        nav {
+            position:fixed; top:0; left:0; right:0; z-index:1000;
+            background:rgba(4,4,10,0.88); backdrop-filter:blur(28px) saturate(200%);
+            border-bottom:1px solid var(--border); animation:navIn 0.8s ease-out;
+        }
+        nav::before {
+            content:''; position:absolute; top:0; left:0; right:0; height:1px;
+            background:linear-gradient(90deg,transparent 0%,var(--accent) 30%,var(--accent2) 70%,transparent 100%);
+            opacity:0.5;
+        }
+        @keyframes navIn { from{transform:translateY(-100%);opacity:0;} to{transform:translateY(0);opacity:1;} }
+        .nav-in { max-width:1360px; margin:0 auto; padding:0 40px; height:64px; display:flex; align-items:center; gap:0; }
+        .nav-logo { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.15rem; letter-spacing:7px; color:var(--accent); text-transform:uppercase; display:flex; align-items:center; gap:12px; margin-right:40px; flex-shrink:0; }
+        .nav-pulse { width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent),0 0 22px rgba(var(--accent-rgb),0.35); animation:logoPulse 2.2s infinite; }
+        @keyframes logoPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(0.55);box-shadow:0 0 3px var(--accent);} }
+        .nav-links { display:flex; gap:2px; flex:1; justify-content:center; }
+        .nav-links a { font-family:'Rajdhani',sans-serif; font-weight:600; font-size:0.78rem; letter-spacing:2.5px; text-transform:uppercase; padding:7px 16px; color:var(--muted); border:1px solid transparent; border-radius:3px; transition:all 0.22s; position:relative; }
+        .nav-links a::after { content:''; position:absolute; bottom:4px; left:50%; right:50%; height:1px; background:var(--accent); transition:left 0.25s,right 0.25s; box-shadow:0 0 6px var(--accent); }
+        .nav-links a:hover { color:var(--accent); background:rgba(var(--accent-rgb),0.06); }
+        .nav-links a:hover::after { left:16px; right:16px; }
+        .nav-meta { display:flex; align-items:center; gap:16px; margin-left:40px; flex-shrink:0; }
+        .nav-clock { font-family:'Share Tech Mono',monospace; font-size:0.72rem; color:var(--accent); letter-spacing:2px; opacity:0.8; }
+        .nav-dot { width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 7px var(--green); animation:blink 2.4s ease infinite; }
+        .nav-badge { font-family:'Share Tech Mono',monospace; font-size:0.6rem; color:var(--muted); padding:3px 9px; border:1px solid var(--border); border-radius:3px; letter-spacing:1px; }
+
+        /* HERO */
+        #hero { min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:100px 20px 80px; position:relative; overflow:hidden; }
+        #hero::before { content:''; position:absolute; inset:0; pointer-events:none;
+            background:linear-gradient(45deg,transparent 49%,rgba(var(--accent-rgb),0.01) 50%,transparent 51%),linear-gradient(-45deg,transparent 49%,rgba(var(--accent2-rgb),0.01) 50%,transparent 51%);
+            background-size:80px 80px; }
+        .hero-badge { display:inline-flex; align-items:center; gap:10px; background:rgba(var(--accent-rgb),0.07); border:1px solid rgba(var(--accent-rgb),0.18); border-radius:2px; padding:6px 18px; font-family:'Share Tech Mono',monospace; font-size:0.7rem; letter-spacing:3px; text-transform:uppercase; color:var(--accent); margin-bottom:40px; animation:fadeUp 1s ease-out 0.2s both; }
+        .hbd { width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation:blink 1.8s infinite; }
+        #hero h1 { font-family:'Rajdhani',sans-serif; font-size:clamp(3.2rem,13vw,9rem); font-weight:700; letter-spacing:0.12em; color:var(--accent); line-height:1; text-shadow:0 0 30px rgba(var(--accent-rgb),0.5),0 0 80px rgba(var(--accent-rgb),0.2); animation:fadeUp 1s ease-out 0.4s both, titleGlow 4s ease-in-out infinite alternate; user-select:none; position:relative; margin-bottom:0; }
+        @keyframes titleGlow { from{text-shadow:0 0 30px rgba(var(--accent-rgb),0.4),0 0 80px rgba(var(--accent-rgb),0.15);} to{text-shadow:0 0 60px rgba(var(--accent-rgb),0.9),0 0 130px rgba(var(--accent-rgb),0.3),0 0 220px rgba(var(--accent-rgb),0.1);} }
+        #hero h1::before, #hero h1::after { content:attr(data-text); position:absolute; top:0; left:0; right:0; opacity:0; }
+        #hero h1::before { color:#00ff88; animation:glitch1 7s infinite; clip-path:polygon(0 20%,100% 20%,100% 45%,0 45%); }
+        #hero h1::after  { color:#00cfff; animation:glitch2 7s infinite; clip-path:polygon(0 60%,100% 60%,100% 80%,0 80%); }
+        @keyframes glitch1 { 0%,94%,100%{opacity:0;transform:none;} 95%{opacity:0.7;transform:translateX(-5px) skewX(-3deg);} 96%{opacity:0;} 97%{opacity:0.4;transform:translateX(4px);} }
+        @keyframes glitch2 { 0%,93%,100%{opacity:0;transform:none;} 94%{opacity:0.6;transform:translateX(5px) skewX(2deg);} 95%{opacity:0;} 96%{opacity:0.3;transform:translateX(-3px);} }
+        .hero-sub { font-family:'Share Tech Mono',monospace; font-size:clamp(0.62rem,2vw,0.88rem); letter-spacing:0.45em; text-transform:uppercase; color:var(--muted); margin-bottom:28px; animation:fadeUp 1s ease-out 0.6s both; }
+        #hero p { font-size:1.05rem; max-width:580px; margin-bottom:48px; color:var(--light); font-weight:300; line-height:1.85; animation:fadeUp 1s ease-out 0.8s both; }
+        .btn-pri { display:inline-flex; align-items:center; gap:10px; padding:15px 44px; background:transparent; color:var(--accent); font-family:'Rajdhani',sans-serif; font-size:0.95rem; font-weight:700; letter-spacing:4px; text-transform:uppercase; border:1px solid var(--accent); border-radius:2px; transition:all 0.3s; position:relative; overflow:hidden; animation:fadeUp 1s ease-out 1s both; }
+        .btn-pri::before { content:''; position:absolute; inset:0; background:var(--accent); transform:translateX(-101%); transition:transform 0.3s; z-index:-1; }
+        .btn-pri:hover { color:var(--bg); box-shadow:0 0 40px rgba(var(--accent-rgb),0.5); }
+        .btn-pri:hover::before { transform:translateX(0); }
+        .hero-scroll { position:absolute; bottom:40px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:10px; animation:fadeUp 1s ease-out 1.2s both; }
+        .hero-scroll-txt { font-family:'Share Tech Mono',monospace; font-size:0.62rem; letter-spacing:3px; color:var(--muted); }
+        .hero-scroll-ln { width:1px; height:50px; background:linear-gradient(to bottom,var(--accent),transparent); animation:scrollLn 2s ease-in-out infinite; }
+        @keyframes scrollLn { 0%,100%{transform:scaleY(1);opacity:1;} 50%{transform:scaleY(0.3);opacity:0.3;} }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
+
+        /* SECTIONS */
+        .swrap { position:relative; z-index:10; }
+        .sinr { max-width:1360px; margin:0 auto; padding:110px 40px; }
+        .shdr { text-align:center; margin-bottom:68px; }
+        .seye { font-family:'Share Tech Mono',monospace; font-size:0.68rem; letter-spacing:5px; color:var(--accent); text-transform:uppercase; margin-bottom:14px; opacity:0.7; display:block; }
+        .seye::before { content:'⬡ '; }
+        h2 { font-family:'Rajdhani',sans-serif; font-size:clamp(1.9rem,4.5vw,2.9rem); font-weight:700; color:var(--text); letter-spacing:4px; text-transform:uppercase; line-height:1.1; }
+        .h2ln { display:flex; align-items:center; justify-content:center; gap:16px; margin-top:18px; }
+        .h2bar { flex:1; max-width:100px; height:1px; background:var(--border); }
+        .h2dot { width:6px; height:6px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); }
+        .dvd { height:1px; background:linear-gradient(90deg,transparent,var(--border),var(--border),transparent); }
+
+        /* SCAN BEAM */
+        .scan-section { position:relative; overflow:hidden; }
+        .scan-section::before { content:''; position:absolute; top:-1px; left:-100%; width:200%; height:1px; background:linear-gradient(90deg,transparent,var(--accent),transparent); animation:scanBeam 6s linear infinite; }
+        @keyframes scanBeam { from{left:-100%;} to{left:100%;} }
+
+        /* FEATURE GRID */
+        .fgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); gap:20px; }
+        .fcard { background:var(--card); padding:34px 26px; border-radius:4px; border:1px solid var(--border); transition:all 0.35s; position:relative; overflow:hidden; }
+        .fcard::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--accent); transform:scaleY(0); transform-origin:bottom; transition:transform 0.4s; box-shadow:0 0 8px var(--accent); }
+        .fcard:hover::before { transform:scaleY(1); }
+        .fcard:hover { border-color:var(--border-hi); transform:translateX(6px); background:#080f10; box-shadow:4px 0 20px rgba(var(--accent-rgb),0.07); }
+        .f-icon { font-size:2rem; display:block; margin-bottom:14px; }
+        .fcard h3 { font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin-bottom:10px; }
+        .fcard p { font-size:0.9rem; color:var(--light); font-weight:300; line-height:1.7; }
+
+        /* STEPS */
+        .steps { display:flex; flex-direction:column; gap:20px; }
+        .step { background:var(--card); border:1px solid var(--border); border-left:3px solid transparent; border-radius:4px; padding:30px 36px; display:flex; align-items:center; gap:40px; transition:all 0.35s; position:relative; overflow:hidden; }
+        .step::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--accent); box-shadow:0 0 10px rgba(var(--accent-rgb),0.5); transform:scaleY(0); transform-origin:bottom; transition:transform 0.4s; }
+        .step:hover::before { transform:scaleY(1); }
+        .step:hover { border-left-color:transparent; transform:translateX(5px); box-shadow:6px 0 28px rgba(var(--accent-rgb),0.08); background:#080f10; }
+        .step-num { font-family:'Rajdhani',sans-serif; font-size:3.2rem; font-weight:700; color:var(--border-hi); min-width:56px; line-height:1; transition:color 0.35s; }
+        .step:hover .step-num { color:rgba(var(--accent-rgb),0.2); }
+        .step-content h3 { font-family:'Rajdhani',sans-serif; font-size:1.15rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin-bottom:8px; }
+        .step-content p { color:var(--light); font-weight:300; font-size:0.93rem; line-height:1.7; }
+        .step-content code { font-family:'Share Tech Mono',monospace; font-size:0.82rem; color:var(--accent); background:rgba(var(--accent-rgb),0.07); padding:2px 8px; border-radius:2px; border:1px solid rgba(var(--accent-rgb),0.2); }
+
+        /* SOURCES GRID */
+        .server-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; }
+        .server-card { background:var(--card); border:1px solid var(--border); border-radius:4px; padding:28px 20px; text-align:center; transition:all 0.3s; position:relative; overflow:hidden; }
+        .server-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--accent),var(--accent2)); transform:scaleX(0); transition:transform 0.35s; box-shadow:0 0 12px var(--accent); }
+        .server-card:hover::before { transform:scaleX(1); }
+        .server-card:hover { border-color:var(--border-hi); transform:translateY(-5px); box-shadow:0 16px 40px rgba(var(--accent-rgb),0.1); }
+        .srv-icon { font-size:2rem; display:block; margin-bottom:12px; }
+        .srv-name { font-family:'Rajdhani',sans-serif; font-size:1.1rem; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--accent); margin-bottom:6px; }
+        .srv-desc { font-size:0.8rem; color:var(--muted); font-weight:300; }
+        .srv-status { display:inline-flex; align-items:center; gap:6px; margin-top:12px; font-family:'Share Tech Mono',monospace; font-size:0.65rem; letter-spacing:2px; color:var(--green); }
+        .srv-dot { width:5px; height:5px; border-radius:50%; background:var(--green); box-shadow:0 0 6px var(--green); animation:blink 2s infinite; }
+
+        /* FAQ */
+        .faq-list { display:flex; flex-direction:column; gap:10px; }
+        .faq-item { border:1px solid var(--border); border-radius:4px; overflow:hidden; transition:border-color 0.25s; }
+        .faq-item.open { border-color:rgba(var(--accent-rgb),0.3); }
+        .faq-q { background:var(--card); padding:18px 22px; cursor:pointer; font-family:'Rajdhani',sans-serif; font-weight:600; font-size:0.98rem; letter-spacing:1px; display:flex; justify-content:space-between; align-items:center; transition:background 0.22s; color:var(--text); user-select:none; }
+        .faq-q:hover { background:#080f10; }
+        .faq-arr { color:var(--accent); transition:transform 0.3s; font-size:0.8rem; }
+        .faq-item.open .faq-arr { transform:rotate(180deg); }
+        .faq-a { display:none; padding:18px 22px; background:var(--surface); border-top:1px solid var(--border); color:var(--light); font-size:0.92rem; font-weight:300; line-height:1.75; }
+        .faq-item.open .faq-a { display:block; }
+
+        /* TERMINAL */
+        .terminal { background:#020208; border:1px solid var(--border); border-radius:6px; overflow:hidden; max-width:760px; margin:0 auto; }
+        .t-hdr { background:#080810; padding:12px 18px; display:flex; align-items:center; gap:7px; border-bottom:1px solid var(--border); }
+        .td { width:10px; height:10px; border-radius:50%; }
+        .td.r{background:#ff5f57;} .td.y{background:#ffbd2e;} .td.g{background:#28c840;}
+        .t-ttl { font-family:'Share Tech Mono',monospace; font-size:0.68rem; color:var(--muted); letter-spacing:2px; margin-left:8px; }
+        .t-body { padding:22px 24px; font-family:'Share Tech Mono',monospace; font-size:0.8rem; line-height:2.1; }
+        .t-cmt { color:var(--muted); }
+        .t-prm { color:var(--accent); }
+        .t-cmd { color:var(--text); }
+        .t-ok  { color:var(--green); }
+        .t-cur { display:inline-block; width:8px; height:14px; background:var(--accent); vertical-align:middle; animation:tcur 1s step-end infinite; }
+        @keyframes tcur { 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+        /* CONTACT */
+        .ctsec { background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:130px 40px; text-align:center; position:relative; overflow:hidden; }
+        .ctsec::before { content:''; position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse 65% 75% at 50% 50%,rgba(var(--accent-rgb),0.04) 0%,transparent 70%); }
+        .ct-in { position:relative; z-index:2; }
+        .disc-btn { display:inline-flex; align-items:center; gap:12px; padding:17px 54px; background:transparent; color:var(--accent); font-family:'Rajdhani',sans-serif; font-size:1.05rem; font-weight:700; letter-spacing:4px; text-transform:uppercase; border:1px solid var(--accent); border-radius:2px; margin:38px 0; transition:all 0.35s; position:relative; overflow:hidden; }
+        .disc-btn::before { content:''; position:absolute; inset:0; background:var(--accent); transform:translateX(-101%); transition:transform 0.35s; z-index:-1; }
+        .disc-btn:hover { color:var(--bg); box-shadow:0 0 50px rgba(var(--accent-rgb),0.55); }
+        .disc-btn:hover::before { transform:translateX(0); }
+
+        /* FOOTER */
+        footer { background:var(--bg); border-top:1px solid var(--border); padding:65px 40px; text-align:center; font-size:0.88rem; color:var(--muted); }
+        .f-logo { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.2rem; letter-spacing:8px; color:var(--accent); margin-bottom:8px; text-shadow:0 0 18px rgba(var(--accent-rgb),0.35); }
+        .f-sub { font-family:'Share Tech Mono',monospace; font-size:0.65rem; letter-spacing:3px; color:var(--muted); margin-bottom:30px; }
+        .lic { display:inline-flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--border); border-radius:3px; padding:7px 16px; margin:10px 0; font-family:'Share Tech Mono',monospace; font-size:0.68rem; color:var(--accent); transition:all 0.25s; }
+        .lic:hover { border-color:var(--accent); background:rgba(var(--accent-rgb),0.05); }
+        .f-dmca { max-width:800px; margin:32px auto 0; text-align:left; }
+        .f-dmca h3 { font-family:'Rajdhani',sans-serif; letter-spacing:4px; text-transform:uppercase; color:var(--accent); margin-bottom:12px; font-size:0.92rem; }
+        .f-dmca ul { margin:10px 0 10px 20px; list-style:disc; color:var(--muted); }
+        .f-dmca li { margin-bottom:4px; font-size:0.82rem; }
+
+        /* EASTER */
+        #etrig { position:fixed; bottom:22px; right:22px; z-index:500; width:9px; height:9px; border-radius:50%; background:rgba(var(--accent-rgb),0.1); cursor:pointer; transition:all 0.3s; }
+        #etrig:hover { background:var(--accent); box-shadow:0 0 20px var(--accent); transform:scale(2); }
+        #emod { position:fixed; inset:0; z-index:9000; display:none; justify-content:center; align-items:center; background:rgba(0,0,0,0.92); backdrop-filter:blur(24px); }
+        #emod.on { display:flex; }
+        .ebox { border:1px solid var(--accent); border-radius:4px; padding:60px 72px; text-align:center; max-width:660px; background:rgba(4,4,10,0.98); animation:eIn 0.45s cubic-bezier(.23,1,.32,1); }
+        @keyframes eIn { from{opacity:0;transform:scale(0.8) translateY(20px);} to{opacity:1;transform:scale(1) translateY(0);} }
+        .e-quote { font-family:'Rajdhani',sans-serif; font-size:1.55rem; font-weight:700; color:var(--accent); letter-spacing:1px; line-height:1.45; margin-bottom:22px; text-shadow:0 0 30px rgba(var(--accent-rgb),0.5); }
+        .e-auth { font-family:'Share Tech Mono',monospace; font-size:0.72rem; color:var(--muted); letter-spacing:3px; }
+        .e-close { margin-top:36px; cursor:pointer; font-family:'Rajdhani',sans-serif; font-size:0.82rem; letter-spacing:3px; color:var(--muted); transition:color 0.2s; }
+        .e-close:hover { color:var(--accent); }
+
+        /* RESPONSIVE */
+        @media(max-width:1024px){.nav-in,.sinr{padding-left:24px;padding-right:24px;}}
+        @media(max-width:768px){ .fgrid{grid-template-columns:1fr;} .step{flex-direction:column;gap:16px;} .server-grid{grid-template-columns:repeat(2,1fr);} }
+        @media(max-width:560px){ .nav-links{display:none;} .ebox{padding:36px 24px;} .e-quote{font-size:1.15rem;} }
+    </style>
+</head>
+<body>
+<div id="grain"></div>
+<div id="scanlines"></div>
+<div id="grid-bg"></div>
+<div id="ambient"></div>
+<div id="particles"></div>
+
+<!-- NAV -->
+<nav id="nav">
+    <div class="nav-in">
+        <div class="nav-logo"><div class="nav-pulse"></div>CO-SAMA</div>
+        <div class="nav-links">
+            <a href="index.html">← Hub</a>
+            <a href="#features">Features</a>
+            <a href="#sources">Sources</a>
+            <a href="#how">Utilisation</a>
+            <a href="#faq">FAQ</a>
+            <a href="#contact">Discord</a>
+        </div>
+        <div class="nav-meta">
+            <div class="nav-dot"></div>
+            <div class="nav-clock" id="nav-clock"></div>
+            <div class="nav-badge" id="nav-badge">v1.0</div>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+    <div class="hero-badge"><div class="hbd"></div>Bicode-dev &nbsp;·&nbsp; Scan Downloader &nbsp;·&nbsp; Manga &amp; Webtoon</div>
+    <h1 data-text="CO-SAMA">CO-SAMA</h1>
+    <div class="hero-sub">Téléchargeur de scans ultra-rapide</div>
+    <p>Téléchargez vos chapitres manga et webtoons préférés en quelques secondes. Multi-sources, téléchargement en masse, organisation automatique par série.</p>
+    <a href="https://github.com/Bicode-dev/Scan_Co-Sama_download/releases/latest" class="btn-pri">
+        <span>Télécharger Co-Sama</span>
+        <span>↓</span>
+    </a>
+    <div class="hero-scroll"><div class="hero-scroll-txt">SCROLL</div><div class="hero-scroll-ln"></div></div>
+</section>
+
+<div class="dvd"></div>
+
+<!-- FEATURES -->
+<div class="swrap scan-section" id="features">
+    <div class="sinr">
+        <div class="shdr">
+            <span class="seye">Fonctionnalités</span>
+            <h2>Ce que Co-Sama offre</h2>
+            <div class="h2ln"><div class="h2bar"></div><div class="h2dot"></div><div class="h2bar"></div></div>
+        </div>
+        <div class="fgrid">
+            <div class="fcard"><span class="f-icon">📖</span><h3>Multi-sources</h3><p>Téléchargement depuis les principales sources de scans — sélection automatique du meilleur miroir disponible.</p></div>
+            <div class="fcard"><span class="f-icon">⚡</span><h3>Ultra-rapide</h3><p>Téléchargement parallèle des pages — un chapitre complet en quelques secondes, sans limitation de vitesse.</p></div>
+            <div class="fcard"><span class="f-icon">📦</span><h3>Téléchargement en masse</h3><p>Téléchargez une série entière ou une plage de chapitres d'un seul coup. Reprise automatique en cas d'interruption.</p></div>
+            <div class="fcard"><span class="f-icon">🗂️</span><h3>Organisation auto</h3><p>Dossiers créés automatiquement par titre de série et numéro de chapitre — votre bibliothèque toujours propre.</p></div>
+            <div class="fcard"><span class="f-icon">📱</span><h3>Android / Termux</h3><p>Compatible Termux sur Android — lisez vos scans hors-ligne sur mobile depuis votre stockage interne.</p></div>
+            <div class="fcard"><span class="f-icon">📦</span><h3>Portable</h3><p>Aucune installation requise. Un seul fichier, double-clic et ça part.</p></div>
+            <div class="fcard"><span class="f-icon">🔓</span><h3>Open Source</h3><p>Code 100% visible et vérifiable sur GitHub par n'importe qui, à tout moment.</p></div>
+            <div class="fcard"><span class="f-icon">🆓</span><h3>Gratuit <span style="font-size:0.65em;color:var(--warn);vertical-align:middle;border:1px solid var(--warn);padding:1px 6px;border-radius:2px;letter-spacing:1px;">?</span></h3><p style="color:var(--light);">Actuellement gratuit — <em style="color:var(--warn);font-style:normal;">susceptible de devenir payant.</em></p></div>
+        </div>
+    </div>
+</div>
+
+<div class="dvd"></div>
+
+<!-- SOURCES -->
+<div class="swrap" id="sources">
+    <div class="sinr">
+        <div class="shdr">
+            <span class="seye">Sources supportées</span>
+            <h2>Où Co-Sama télécharge</h2>
+            <div class="h2ln"><div class="h2bar"></div><div class="h2dot"></div><div class="h2bar"></div></div>
+        </div>
+        <div class="server-grid">
+            <div class="server-card">
+                <span class="srv-icon">🌐</span>
+                <div class="srv-name">Scan-VF</div>
+                <div class="srv-desc">Source principale VF</div>
+                <div class="srv-status"><div class="srv-dot"></div>Actif</div>
+            </div>
+            <div class="server-card">
+                <span class="srv-icon">📚</span>
+                <div class="srv-name">Manga-Scan</div>
+                <div class="srv-desc">Bibliothèque complète</div>
+                <div class="srv-status"><div class="srv-dot"></div>Actif</div>
+            </div>
+            <div class="server-card">
+                <span class="srv-icon">🇯🇵</span>
+                <div class="srv-name">Webtoon</div>
+                <div class="srv-desc">Webtoons coréens &amp; autres</div>
+                <div class="srv-status"><div class="srv-dot"></div>Actif</div>
+            </div>
+            <div class="server-card">
+                <span class="srv-icon">🔄</span>
+                <div class="srv-name">Miroirs auto</div>
+                <div class="srv-desc">Basculement automatique</div>
+                <div class="srv-status"><div class="srv-dot"></div>Actif</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="dvd"></div>
+
+<!-- STEPS -->
+<div class="swrap scan-section" id="how">
+    <div class="sinr">
+        <div class="shdr">
+            <span class="seye">Guide</span>
+            <h2>Utilisation en 4 étapes</h2>
+            <div class="h2ln"><div class="h2bar"></div><div class="h2dot"></div><div class="h2bar"></div></div>
+        </div>
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">01</div>
+                <div class="step-content">
+                    <h3>Lancez Co-Sama</h3>
+                    <p>Double-clic sur <code>Co-Sama.exe</code> (Windows) ou <code>python3 Co-sama.py</code> dans Termux. Aucune installation préalable requise.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">02</div>
+                <div class="step-content">
+                    <h3>Entrez le titre ou l'URL</h3>
+                    <p>Saisissez le nom de la série ou collez directement l'URL d'un chapitre. Co-Sama détecte la source automatiquement.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">03</div>
+                <div class="step-content">
+                    <h3>Choisissez les chapitres</h3>
+                    <p>Téléchargez un chapitre précis, une plage <code>1-50</code>, ou la série entière d'un seul coup.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">04</div>
+                <div class="step-content">
+                    <h3>Profitez hors-ligne</h3>
+                    <p>Les pages sont sauvegardées dans <code>/Download/scans/&lt;Titre&gt;/Chapitre-XX/</code> — prêtes à lire avec n'importe quelle visionneuse.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="dvd"></div>
+
+<!-- TERMINAL QUICKSTART -->
+<div class="swrap" id="terminal">
+    <div class="sinr">
+        <div class="shdr">
+            <span class="seye">Démarrage rapide</span>
+            <h2>Termux en 30 secondes</h2>
+            <div class="h2ln"><div class="h2bar"></div><div class="h2dot"></div><div class="h2bar"></div></div>
+        </div>
+        <div class="terminal">
+            <div class="t-hdr">
+                <div class="td r"></div><div class="td y"></div><div class="td g"></div>
+                <span class="t-ttl">CO-SAMA — TERMUX QUICKSTART</span>
+            </div>
+            <div class="t-body">
+                <div><span class="t-cmt"># 1. Installer Co-Sama via Co-install</span></div>
+                <div><span class="t-prm">$ </span><span class="t-cmd">bash Co-install.sh</span></div>
+                <br>
+                <div><span class="t-cmt"># 2. Sélectionner [3] Co-sama.py dans le menu</span></div>
+                <div><span class="t-ok">✓ Co-sama.py installé → ~/.local/share/CoTEAM/Co-Menu/</span></div>
+                <br>
+                <div><span class="t-cmt"># 3. Lancer avec l'alias ou le raccourci</span></div>
+                <div><span class="t-prm">$ </span><span class="t-cmd">cosama</span></div>
+                <br>
+                <div><span class="t-ok">✓ CO-SAMA v1.0  — Chargement...</span></div>
+                <div><span class="t-ok">✓ Sources disponibles &nbsp;[4]</span></div>
+                <div><span class="t-ok">✓ Dossier scans prêt &nbsp;[OK]</span></div>
+                <br>
+                <div><span class="t-prm">&gt; </span><span class="t-cmd">Entrez un titre ou une URL</span><span class="t-cur"></span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="dvd"></div>
+
+<!-- FAQ -->
+<div class="swrap scan-section" id="faq">
+    <div class="sinr">
+        <div class="shdr">
+            <span class="seye">Questions fréquentes</span>
+            <h2>FAQ</h2>
+            <div class="h2ln"><div class="h2bar"></div><div class="h2dot"></div><div class="h2bar"></div></div>
+        </div>
+        <div class="faq-list">
+            <div class="faq-item">
+                <div class="faq-q">Où sont sauvegardés les scans téléchargés ? <span class="faq-arr">▼</span></div>
+                <div class="faq-a">Sur PC dans le dossier <code>scans/</code> à côté du script. Sur Android via Termux dans <code>/storage/emulated/0/Download/scans/</code> — accessible depuis votre galerie.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Puis-je télécharger plusieurs séries en même temps ? <span class="faq-arr">▼</span></div>
+                <div class="faq-a">Oui, lancez plusieurs instances de Co-Sama dans des onglets Termux séparés ou dans des fenêtres différentes sur PC.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Le téléchargement s'est interrompu, dois-je tout recommencer ? <span class="faq-arr">▼</span></div>
+                <div class="faq-a">Non. Co-Sama détecte automatiquement les chapitres déjà présents et reprend là où il s'est arrêté. Relancez simplement la même commande.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Co-Sama fonctionne-t-il sur Windows sans Python ? <span class="faq-arr">▼</span></div>
+                <div class="faq-a">Oui, le fichier <code>.exe</code> disponible dans les releases GitHub est autonome — Python n'est pas requis sur Windows.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Quelle visionneuse utiliser pour lire les scans téléchargés ? <span class="faq-arr">▼</span></div>
+                <div class="faq-a">Sur PC : CDisplayEx ou MComix. Sur Android : Perfect Viewer ou Tachiyomi en mode local. Les pages sont des images JPG/PNG standard compatibles avec toute visionneuse.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="dvd"></div>
+
+<!-- CONTACT -->
+<div class="ctsec" id="contact">
+    <div class="ct-in">
+        <span class="seye">Support &amp; Communauté</span>
+        <h2 style="margin-top:8px;">Une question ?</h2>
+        <div class="h2ln" style="max-width:380px;margin:18px auto 0;"><div class="h2bar"></div><div class="h2dot"></div><div class="h2bar"></div></div>
+        <p style="color:var(--light);margin-top:22px;font-size:1rem;font-weight:300;">Support instantané &nbsp;·&nbsp; Mises à jour &nbsp;·&nbsp; Communauté active</p>
+        <a href="https://discord.gg/cG6qSTSeUA" target="_blank" class="disc-btn"><span>Rejoindre le Discord</span><span>↗</span></a>
+        <div style="display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-top:16px;">
+            <a href="https://github.com/Bicode-dev/Scan_Co-Sama_download" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;letter-spacing:2px;color:var(--muted);transition:color 0.2s;padding:5px 0;border-bottom:1px solid transparent;" onmouseover="this.style.color='var(--accent)';this.style.borderBottomColor='var(--accent)'" onmouseout="this.style.color='';this.style.borderBottomColor=''">github.com/Bicode-dev</a>
+            <a href="index.html" style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;letter-spacing:2px;color:var(--muted);transition:color 0.2s;padding:5px 0;border-bottom:1px solid transparent;" onmouseover="this.style.color='var(--accent)';this.style.borderBottomColor='var(--accent)'" onmouseout="this.style.color='';this.style.borderBottomColor=''">← Retour au Hub</a>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="f-logo">CO-SAMA</div>
+    <div class="f-sub">// SCAN DOWNLOADER BY BICODE-DEV //</div>
+    <p>© 2026 CO Suite &nbsp;·&nbsp; L'équipe Bicode_DEV</p>
+    <div style="margin:22px 0;">
+        <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" class="lic">
+            🔒 CC BY-NC-ND 4.0 — Usage personnel uniquement • Pas de modification • Pas d'usage commercial
+        </a>
+    </div>
+    <p style="font-size:0.8rem;max-width:680px;margin:0 auto 28px;color:var(--muted);">
+        Ce logiciel est protégé par la licence <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" style="color:var(--accent);">CC BY-NC-ND 4.0</a>.
+        Toute utilisation commerciale, modification ou redistribution est strictement interdite.
+    </p>
+    <div class="f-dmca">
+        <h3>DMCA</h3>
+        <p>Si vous estimez qu'un contenu porte atteinte à vos droits, contactez directement la plateforme hébergeant ce contenu.</p>
+        <ul>
+            <li>Signature physique ou électronique d'une personne autorisée.</li>
+            <li>Identification précise de l'œuvre protégée.</li>
+            <li>Description du contenu supposé contrefaisant et son emplacement.</li>
+            <li>Déclaration attestant de votre bonne foi.</li>
+        </ul>
+        <p style="margin-top:10px;font-size:0.82rem;">Toute demande doit être adressée aux services d'hébergement concernés.</p>
+    </div>
+</footer>
+
+<!-- EASTER EGG -->
+<div id="etrig" title="..."></div>
+<div id="emod">
+    <div class="ebox">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:3px;margin-bottom:28px;">// MESSAGE CACHÉ //</div>
+        <div class="e-quote">« les droits humains compteront toujours plus que les droits d'auteur. »</div>
+        <div class="e-auth">— BICODE-DEV, 2026</div>
+        <div style="margin:32px 0;height:1px;background:var(--border);"></div>
+        <p style="font-family:'Barlow',sans-serif;font-size:0.88rem;color:var(--light);font-weight:300;line-height:1.8;">Ce projet est open-source parce que l'accès au savoir, à la culture et à l'information est un droit fondamental pour tous.</p>
+        <div class="e-close" onclick="closeE()">[ FERMER ]</div>
+    </div>
+</div>
+
+<script>
+// ══ PARTICLES ═══════════════════════════════════════════════
+(function(){
+    const c=document.getElementById('particles');
+    for(let i=0;i<80;i++){
+        const p=document.createElement('div'); p.className='particle';
+        const sz=Math.random()*2.5+0.4;
+        const isA2=Math.random()>.68;
+        p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;bottom:${-Math.random()*10}%;background:${isA2?'var(--accent2)':'var(--accent)'};box-shadow:0 0 ${sz*3}px ${isA2?'var(--accent2)':'var(--accent)'};animation-duration:${Math.random()*20+12}s;animation-delay:${Math.random()*15}s;`;
+        c.appendChild(p);
+    }
+})();
+
+// ══ CLOCK ════════════════════════════════════════════════════
+function tick(){const n=new Date(),h=n.getHours().toString().padStart(2,'0'),m=n.getMinutes().toString().padStart(2,'0'),s=n.getSeconds().toString().padStart(2,'0');const el=document.getElementById('nav-clock');if(el)el.textContent=`${h}:${m}:${s}`;}
+setInterval(tick,1000); tick();
+
+// ══ EASTER EGG ══════════════════════════════════════════════
+document.getElementById('etrig').addEventListener('click',()=>document.getElementById('emod').classList.add('on'));
+function closeE(){document.getElementById('emod').classList.remove('on');}
+document.getElementById('emod').addEventListener('click',e=>{if(e.target===e.currentTarget)closeE();});
+let ks=[];const KC=[38,38,40,40,37,39,37,39,66,65];
+document.addEventListener('keydown',e=>{ks.push(e.keyCode);if(ks.length>10)ks.shift();if(JSON.stringify(ks)===JSON.stringify(KC))document.getElementById('emod').classList.add('on');});
+
+// ══ FAQ ══════════════════════════════════════════════════════
+document.querySelectorAll('.faq-q').forEach(q=>{
+    q.addEventListener('click',()=>{
+        const item=q.parentElement;
+        const wasOpen=item.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+        if(!wasOpen) item.classList.add('open');
+    });
+});
+
+// ══ SMOOTH SCROLL ═══════════════════════════════════════════
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth'});});});
+
+// ══ NAV ON SCROLL ═══════════════════════════════════════════
+window.addEventListener('scroll',()=>{const nav=document.getElementById('nav');const s=window.scrollY>60;nav.style.background=s?'rgba(4,4,10,0.98)':'rgba(4,4,10,0.88)';nav.style.boxShadow=s?'0 8px 40px rgba(0,0,0,0.5)':'none';},{passive:true});
+
+// ══ PARALLAX ════════════════════════════════════════════════
+window.addEventListener('scroll',()=>{const y=window.scrollY;document.getElementById('grid-bg').style.transform=`translateY(${y*.018}px)`;document.getElementById('ambient').style.transform=`translateY(${y*.028}px)`;},{passive:true});
+</script>
+</body>
+</html>
